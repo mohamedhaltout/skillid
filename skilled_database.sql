@@ -21,6 +21,25 @@ CREATE TABLE Prestataire (
     FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id_utilisateur)
 );
 
+
+CREATE TABLE categories (
+  id_categorie INT PRIMARY KEY AUTO_INCREMENT,
+  nom VARCHAR(100) NOT NULL UNIQUE,
+  description TEXT,
+  icone TEXT,
+  type ENUM('standard', 'emergency') DEFAULT 'standard',
+);
+
+
+CREATE TABLE prestataire_categories (
+  id_prestataire INT NOT NULL,
+  id_categorie INT NOT NULL,
+  PRIMARY KEY (id_prestataire, id_categorie),
+  FOREIGN KEY (id_prestataire) REFERENCES prestataire(id_prestataire),
+  FOREIGN KEY (id_categorie) REFERENCES categories(id_categorie)
+);
+
+
 CREATE TABLE Experience_prestataire (
     id_experience INT PRIMARY KEY,
     id_prestataire INT NOT NULL,
@@ -82,6 +101,33 @@ CREATE TABLE Evaluation (
     note DECIMAL(2, 1) NOT NULL CHECK (note >= 0 AND note <= 5),
     commentaire TEXT,
     date_evaluation DATE NOT NULL,
+    FOREIGN KEY (id_reservation) REFERENCES Reservation(id_reservation),
+    FOREIGN KEY (id_client) REFERENCES Client(id_client),
+    FOREIGN KEY (id_prestataire) REFERENCES Prestataire(id_prestataire)
+);
+
+
+CREATE TABLE Admin (
+    id_admin INT AUTO_INCREMENT PRIMARY KEY,
+    id_utilisateur INT NOT NULL,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id_utilisateur)
+);
+
+
+CREATE TABLE Paiement (
+    id_paiement INT AUTO_INCREMENT PRIMARY KEY,
+    id_reservation INT NOT NULL,
+    id_client INT NOT NULL,
+    id_prestataire INT NOT NULL,
+    montant DECIMAL(10, 2) NOT NULL,
+    type_paiement ENUM('acompte', 'par_jour', 'global') NOT NULL,
+    methode_paiement ENUM('stripe', 'paypal', 'virement') NOT NULL,
+    date_paiement DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    statut_paiement ENUM('en_attente', 'effectué', 'échoué') NOT NULL,
+    reference_transaction VARCHAR(255),
+    
     FOREIGN KEY (id_reservation) REFERENCES Reservation(id_reservation),
     FOREIGN KEY (id_client) REFERENCES Client(id_client),
     FOREIGN KEY (id_prestataire) REFERENCES Prestataire(id_prestataire)
