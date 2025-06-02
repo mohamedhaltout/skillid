@@ -8,6 +8,7 @@ CREATE TABLE Utilisateur (
 CREATE TABLE Prestataire (
     id_prestataire INT PRIMARY KEY,
     id_utilisateur INT NOT NULL,
+    id_categorie INT NOT NULL,
     nom VARCHAR(100) NOT NULL,
     prenom VARCHAR(100) NOT NULL,
     photo TEXT NOT NULL,
@@ -18,26 +19,20 @@ CREATE TABLE Prestataire (
     tarif_journalier DECIMAL(10, 2) NOT NULL,
     accepte_budget_global BOOLEAN NOT NULL,
     disponibilite TEXT NOT NULL,
-    FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id_utilisateur)
+    FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id_utilisateur),
+    FOREIGN KEY (id_categorie) REFERENCES Categories(id_categorie)
 );
 
 
-CREATE TABLE categories (
-  id_categorie INT PRIMARY KEY AUTO_INCREMENT,
-  nom VARCHAR(100) NOT NULL UNIQUE,
-  description TEXT,
-  icone TEXT,
-  type ENUM('standard', 'emergency') DEFAULT 'standard',
+
+CREATE TABLE Categories (
+    id_categorie INT PRIMARY KEY AUTO_INCREMENT,
+    nom VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT,
+    icone TEXT,
+    type ENUM('standard', 'emergency') DEFAULT 'standard'
 );
 
-
-CREATE TABLE prestataire_categories (
-  id_prestataire INT NOT NULL,
-  id_categorie INT NOT NULL,
-  PRIMARY KEY (id_prestataire, id_categorie),
-  FOREIGN KEY (id_prestataire) REFERENCES prestataire(id_prestataire),
-  FOREIGN KEY (id_categorie) REFERENCES categories(id_categorie)
-);
 
 
 CREATE TABLE Experience_prestataire (
