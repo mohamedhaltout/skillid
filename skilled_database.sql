@@ -1,12 +1,22 @@
 CREATE TABLE Utilisateur (
-    id_utilisateur INT PRIMARY KEY,
+    id_utilisateur INT PRIMARY KEY AUTO_INCREMENT,
     email VARCHAR(255) NOT NULL UNIQUE,
     mot_de_passe VARCHAR(255) NOT NULL,
     role VARCHAR(50) NOT NULL CHECK (role IN ('client', 'prestataire', 'admin'))
 );
 
+
+CREATE TABLE Categories (
+    id_categorie INT PRIMARY KEY AUTO_INCREMENT,
+    nom VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT,
+    icone TEXT,
+    type ENUM('standard', 'emergency') DEFAULT 'standard'
+);
+
+
 CREATE TABLE Prestataire (
-    id_prestataire INT PRIMARY KEY,
+    id_prestataire INT PRIMARY KEY AUTO_INCREMENT,
     id_utilisateur INT NOT NULL,
     id_categorie INT NOT NULL,
     nom VARCHAR(100) NOT NULL,
@@ -25,18 +35,9 @@ CREATE TABLE Prestataire (
 
 
 
-CREATE TABLE Categories (
-    id_categorie INT PRIMARY KEY AUTO_INCREMENT,
-    nom VARCHAR(100) NOT NULL UNIQUE,
-    description TEXT,
-    icone TEXT,
-    type ENUM('standard', 'emergency') DEFAULT 'standard'
-);
-
-
 
 CREATE TABLE Experience_prestataire (
-    id_experience INT PRIMARY KEY,
+    id_experience INT PRIMARY KEY AUTO_INCREMENT,
     id_prestataire INT NOT NULL,
     titre_experience VARCHAR(255) NOT NULL,
     description VARCHAR(1000) NOT NULL,
@@ -45,7 +46,7 @@ CREATE TABLE Experience_prestataire (
 );
 
 CREATE TABLE Media_experience (
-    id_media INT PRIMARY KEY,
+    id_media INT PRIMARY KEY AUTO_INCREMENT,
     id_experience INT NOT NULL,
     type_contenu VARCHAR(50) NOT NULL CHECK (type_contenu IN ('image', 'video')),
     chemin_fichier TEXT NOT NULL,
@@ -54,7 +55,7 @@ CREATE TABLE Media_experience (
 );
 
 CREATE TABLE Client (
-    id_client INT PRIMARY KEY,
+    id_client INT PRIMARY KEY AUTO_INCREMENT,
     id_utilisateur INT NOT NULL,
     nom VARCHAR(100) NOT NULL,
     prenom VARCHAR(100) NOT NULL,
@@ -63,7 +64,7 @@ CREATE TABLE Client (
 );
 
 CREATE TABLE Reservation (
-    id_reservation INT PRIMARY KEY,
+    id_reservation INT PRIMARY KEY AUTO_INCREMENT,
     id_client INT NOT NULL,
     id_prestataire INT NOT NULL,
     description_service TEXT NOT NULL,
@@ -78,7 +79,7 @@ CREATE TABLE Reservation (
 );
 
 CREATE TABLE Devis (
-    id_devis INT PRIMARY KEY,
+    id_devis INT PRIMARY KEY AUTO_INCREMENT,
     id_reservation INT NOT NULL,
     date_debut_travaux DATE NOT NULL,
     cout_total DECIMAL(10, 2) NOT NULL,
@@ -89,7 +90,7 @@ CREATE TABLE Devis (
 );
 
 CREATE TABLE Evaluation (
-    id_evaluation INT PRIMARY KEY,
+    id_evaluation INT PRIMARY KEY AUTO_INCREMENT,
     id_reservation INT NOT NULL,
     id_client INT NOT NULL,
     id_prestataire INT NOT NULL,
