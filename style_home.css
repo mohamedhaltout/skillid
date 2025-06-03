@@ -1,5 +1,5 @@
 body {
-    font-family: "Open Sans", sans-serif;
+    font-family: "Poppins", sans-serif;
     margin: 0;
     padding: 20px;
 }
@@ -11,15 +11,53 @@ header {
 
 
 .top_header {
+    font-family: "Open Sans", sans-serif;
     display: flex;
+    justify-content: center;
+}
+
+.top_header p {
+    margin: 0;
+    padding: 0 10px;
+    font-size: 13px;
+    color: #62646A;
+}
+
+.top_header img {
+    width: 18px;
+    height: 18px;
+    margin-left: 100px;
 }
 
 
 .header .logo {
     display: flex;
+    width: 40px;
+    height: 40px;
+    color: #3E185B;
+}
+
+.header .logo h1 span {
+    color: #8E7B9C;
 }
 
 
+
+
+.header .menu {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.header .menu ul{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    gap: 50px;
+}
 
 
 
