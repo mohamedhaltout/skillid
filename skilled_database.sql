@@ -1,6 +1,8 @@
 CREATE TABLE Utilisateur (
     id_utilisateur INT PRIMARY KEY AUTO_INCREMENT,
     email VARCHAR(255) NOT NULL UNIQUE,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
     mot_de_passe VARCHAR(255) NOT NULL,
     role VARCHAR(50) NOT NULL CHECK (role IN ('client', 'prestataire', 'admin'))
 );
@@ -19,8 +21,6 @@ CREATE TABLE Prestataire (
     id_prestataire INT PRIMARY KEY AUTO_INCREMENT,
     id_utilisateur INT NOT NULL,
     id_categorie INT NOT NULL,
-    nom VARCHAR(100) NOT NULL,
-    prenom VARCHAR(100) NOT NULL,
     photo TEXT NOT NULL,
     specialite VARCHAR(100) NOT NULL,
     pays VARCHAR(100) NOT NULL,
@@ -57,8 +57,6 @@ CREATE TABLE Media_experience (
 CREATE TABLE Client (
     id_client INT PRIMARY KEY AUTO_INCREMENT,
     id_utilisateur INT NOT NULL,
-    nom VARCHAR(100) NOT NULL,
-    prenom VARCHAR(100) NOT NULL,
     telephone VARCHAR(20) NOT NULL UNIQUE,
     FOREIGN KEY (id_utilisateur) REFERENCES Utilisateur(id_utilisateur)
 );

@@ -1,0 +1,30 @@
+body {
+    font-family: "Open Sans", sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+header {
+    padding: 10px 0;
+    text-align: center;
+}
+
+
+.top_header {
+    display: flex;
+}
+
+
+.header .logo {
+    display: flex;
+}
+
+
+
+
+
+.header {
+    display: flex;
+    text-align: center;
+}
+
