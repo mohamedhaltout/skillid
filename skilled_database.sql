@@ -109,7 +109,7 @@ CREATE TABLE Paiement (
     id_devis INT NOT NULL,
     montant DECIMAL(10,2) NOT NULL,
     type_paiement ENUM('acompte', 'par_jour', 'global') NOT NULL,
-    methode_paiement ENUM('stripe', 'paypal', 'virement', 'espece') NOT NULL,
+    methode_paiement ENUM('stripe', 'paypal', 'virement') NOT NULL,
     date_paiement DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     statut_paiement ENUM('en_attente', 'effectué', 'échoué') NOT NULL,
     reference_transaction VARCHAR(255),
