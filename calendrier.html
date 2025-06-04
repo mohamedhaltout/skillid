@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Availability Calendar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(135deg, #f5f3f7 0%, #e8e4ec 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .calendar-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 60px rgba(62, 24, 91, 0.15);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calendar-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #3E185B 0%, #8E7B9C 100%);
+        }
+
+        .calendar-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .calendar-title {
+            color: #3E185B;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .calendar-subtitle {
+            color: #8E7B9C;
+            font-size: 16px;
+            font-weight: 400;
+        }
+
+        .month-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding: 0 10px;
+        }
+
+        .nav-button {
+            background: #3E185B;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(62, 24, 91, 0.2);
+        }
+
+        .nav-button:hover {
+            background: #2d1144;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(62, 24, 91, 0.3);
+        }
+
+        .current-month {
+            color: #3E185B;
+            font-size: 20px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+        }
+
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .weekday {
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: #8E7B9C;
+            padding: 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+        }
+
+        .day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            border: 2px solid transparent;
+        }
+
+        .day:not(.other-month):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(62, 24, 91, 0.2);
+        }
+
+        .day.other-month {
+            color: #d1c7d8;
+            cursor: not-allowed;
+        }
+
+        .day.available {
+            background: #3E185B;
+            color: white;
+            font-weight: 600;
+        }
+
+        .day.available:hover {
+            background: #2d1144;
+        }
+
+        .day.unavailable {
+            background: #f8f6fa;
+            color: #8E7B9C;
+            border: 2px solid #e8e4ec;
+        }
+
+        .day.unavailable:hover {
+            background: #f0ecf4;
+            border-color: #8E7B9C;
+        }
+
+        .day.today {
+            box-shadow: 0 0 0 3px rgba(62, 24, 91, 0.3);
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 2px solid #f5f3f7;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .legend-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .legend-dot.available {
+            background: #3E185B;
+        }
+
+        .legend-dot.unavailable {
+            background: #8E7B9C;
+        }
+
+        .legend-text {
+            color: #666;
+        }
+
+        @media (max-width: 480px) {
+            .calendar-container {
+                padding: 25px;
+                margin: 10px;
+            }
+            
+            .calendar-title {
+                font-size: 24px;
+            }
+            
+            .day {
+                font-size: 14px;
+            }
+            
+            .legend {
+                flex-direction: column;
+                gap: 15px;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calendar-container">
+        <div class="calendar-header">
+            <h1 class="calendar-title">Availability Calendar</h1>
+            <p class="calendar-subtitle">Click dates to toggle availability</p>
+        </div>
+        
+        <div class="month-navigation">
+            <button class="nav-button" id="prevMonth">‹</button>
+            <div class="current-month" id="currentMonth"></div>
+            <button class="nav-button" id="nextMonth">›</button>
+        </div>
+        
+        <div class="weekdays">
+            <div class="weekday">Sun</div>
+            <div class="weekday">Mon</div>
+            <div class="weekday">Tue</div>
+            <div class="weekday">Wed</div>
+            <div class="weekday">Thu</div>
+            <div class="weekday">Fri</div>
+            <div class="weekday">Sat</div>
+        </div>
+        
+        <div class="days-grid" id="daysGrid"></div>
+        
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-dot available"></div>
+                <span class="legend-text">Available</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-dot unavailable"></div>
+                <span class="legend-text">Unavailable</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class AvailabilityCalendar {
+            constructor() {
+                this.currentDate = new Date();
+                this.today = new Date();
+                this.availableDates = new Set();
+                this.unavailableDates = new Set();
+                
+                this.monthNames = [
+                    'January', 'February', 'March', 'April', 'May', 'June',
+                    'July', 'August', 'September', 'October', 'November', 'December'
+                ];
+                
+                this.init();
+            }
+            
+            init() {
+                this.bindEvents();
+                this.render();
+            }
+            
+            bindEvents() {
+                document.getElementById('prevMonth').addEventListener('click', () => {
+                    this.currentDate.setMonth(this.currentDate.getMonth() - 1);
+                    this.render();
+                });
+                
+                document.getElementById('nextMonth').addEventListener('click', () => {
+                    this.currentDate.setMonth(this.currentDate.getMonth() + 1);
+                    this.render();
+                });
+            }
+            
+            getDateKey(date) {
+                return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+            }
+            
+            isToday(date) {
+                return date.getDate() === this.today.getDate() &&
+                       date.getMonth() === this.today.getMonth() &&
+                       date.getFullYear() === this.today.getFullYear();
+            }
+            
+            toggleDateAvailability(date) {
+                const dateKey = this.getDateKey(date);
+                
+                if (this.availableDates.has(dateKey)) {
+                    this.availableDates.delete(dateKey);
+                    this.unavailableDates.add(dateKey);
+                } else if (this.unavailableDates.has(dateKey)) {
+                    this.unavailableDates.delete(dateKey);
+                } else {
+                    this.availableDates.add(dateKey);
+                }
+                
+                this.render();
+            }
+            
+            render() {
+                const year = this.currentDate.getFullYear();
+                const month = this.currentDate.getMonth();
+                
+                // Update month display
+                document.getElementById('currentMonth').textContent = 
+                    `${this.monthNames[month]} ${year}`;
+                
+                // Get first day of month and number of days
+                const firstDay = new Date(year, month, 1);
+                const lastDay = new Date(year, month + 1, 0);
+                const daysInMonth = lastDay.getDate();
+                const startingDayOfWeek = firstDay.getDay();
+                
+                // Get previous month info for padding
+                const prevMonth = new Date(year, month - 1, 0);
+                const daysInPrevMonth = prevMonth.getDate();
+                
+                const daysGrid = document.getElementById('daysGrid');
+                daysGrid.innerHTML = '';
+                
+                // Add previous month's trailing days
+                for (let i = startingDayOfWeek - 1; i >= 0; i--) {
+                    const day = daysInPrevMonth - i;
+                    const dayElement = this.createDayElement(day, true);
+                    daysGrid.appendChild(dayElement);
+                }
+                
+                // Add current month's days
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const date = new Date(year, month, day);
+                    const dayElement = this.createDayElement(day, false, date);
+                    daysGrid.appendChild(dayElement);
+                }
+                
+                // Add next month's leading days
+                const totalCells = daysGrid.children.length;
+                const remainingCells = 42 - totalCells; // 6 rows × 7 days
+                for (let day = 1; day <= remainingCells; day++) {
+                    const dayElement = this.createDayElement(day, true);
+                    daysGrid.appendChild(dayElement);
+                }
+            }
+            
+            createDayElement(day, isOtherMonth, date = null) {
+                const dayElement = document.createElement('div');
+                dayElement.className = 'day';
+                dayElement.textContent = day;
+                
+                if (isOtherMonth) {
+                    dayElement.classList.add('other-month');
+                    return dayElement;
+                }
+                
+                if (date) {
+                    const dateKey = this.getDateKey(date);
+                    
+                    if (this.isToday(date)) {
+                        dayElement.classList.add('today');
+                    }
+                    
+                    if (this.availableDates.has(dateKey)) {
+                        dayElement.classList.add('available');
+                    } else if (this.unavailableDates.has(dateKey)) {
+                        dayElement.classList.add('unavailable');
+                    } else {
+                        dayElement.classList.add('unavailable'); // Default to unavailable
+                    }
+                    
+                    dayElement.addEventListener('click', () => {
+                        this.toggleDateAvailability(date);
+                    });
+                }
+                
+                return dayElement;
+            }
+        }
+        
+        // Initialize calendar when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new AvailabilityCalendar();
+        });
+    </script>
+</body>
+</html>
