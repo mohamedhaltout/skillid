@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300..700;1,300..700&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=League+Spartan:wght@100..900&family=Lora:ital,wght@0,400..700;1,400..700&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Red+Hat+Text:ital,wght@0,300..700;1,300..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style_home.css">
+    <link rel="shortcut icon" href="img/favicon_skilled.png" type="image/x-icon">
     <title>Skilled - Reserve. Confirm. Complete.</title>
 </head>
 <body>
@@ -18,8 +19,15 @@
         <div class="header">
             <div class="logo">
                 <img src="img/skilled_logo.svg" alt="skilled_logo">
-                <h1>Skilled<span>.</span></h1>
+                <h1>Skillid<span>.</span></h1>
             </div>
+
+            <div class="hamburger" onclick="toggleMenu()">
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
+
 
             <div class="menu">
                 <ul>
@@ -29,6 +37,9 @@
                     <li><a href="#">BecomeIn Artisan</a></li>
                     <li><a href="#">Skilled Go</a></li>
                     <li><a href="#">Sign In</a></li>
+                    <li class="mobile_cta_button">
+        <button>Join</button>
+      </li>
                 </ul>
             </div>
 
@@ -38,5 +49,32 @@
 
         </div>
     </header>
+
+
+    <main>
+        
+        <h1>Main Text as a<br>
+hero Title Exemple</h1>
+
+<div class="search">
+    <input type="search" name="search" id="search" placeholder="Search for any service ...">
+    <button class="search-btn" type="button">
+                <img src="img/search.png" alt="Search">
+            </button>
+</div>
+
+        <img src="img/back_skilled.png" alt="skilled" >
+
+    </main>
+
+
+
+
+    <script>
+  function toggleMenu() {
+    document.querySelector('.menu ul').classList.toggle('show');
+  }
+</script>
+
 </body>
 </html>

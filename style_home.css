@@ -1,68 +1,284 @@
 body {
     font-family: "Poppins", sans-serif;
     margin: 0;
-    padding: 20px;
+    padding: 0px;
 }
 
 header {
-    padding: 10px 0;
+    padding: 0px 0;
     text-align: center;
 }
 
-
 .top_header {
-    font-family: "Open Sans", sans-serif;
-    display: flex;
-    justify-content: center;
+  font-family: "Open Sans", sans-serif;
+  position: relative;          
+  text-align: center;          
+  margin: 20px;
+  padding: 0px 40px;           
 }
 
 .top_header p {
-    margin: 0;
-    padding: 0 10px;
-    font-size: 13px;
-    color: #62646A;
+  margin: 0;
+  font-size: 13px;
+  color: #62646A;
 }
 
 .top_header img {
-    width: 18px;
-    height: 18px;
-    margin-left: 100px;
-}
-
-
-.header .logo {
-    display: flex;
-    width: 40px;
-    height: 40px;
-    color: #3E185B;
-}
-
-.header .logo h1 span {
-    color: #8E7B9C;
-}
-
-
-
-
-.header .menu {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-
-.header .menu ul{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    list-style: none;
-    gap: 50px;
+  width: 18px;
+  height: 18px;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);  
+  cursor: pointer;
 }
 
 
 
 .header {
+  border-top: 1px solid #E3E3E3;
+}
+
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  padding: 10px 60px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+
+.header .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #3E185B;
+}
+
+.header .logo h1 {
+  font-size: 30px;
+  margin: 0;
+  padding-top: 25px;
+}
+
+.header .logo h1 span {
+  color: #8E7B9C;
+}
+
+.header .logo img {
+  width: 50px;
+  height: auto;
+}
+
+.header .menu {
+  position: static;        
+  margin-left: auto;       
+  margin-right: 30px;      
+}
+
+.header .menu img {
+    width: 17px;        
+    height: 17px;
+    margin-right: 8px;
+}
+
+
+.header .menu ul {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  list-style: none;
+  gap: 50px;
+  margin: 0;
+  padding: 0;
+}
+
+.header .menu li a {
+  text-decoration: none;    
+  border-bottom: none;      
+  color: #333;        
+}
+
+
+
+.header .cta_button {
+  display: flex;
+  align-items: center;
+  border: 1px solid #3B3B3B;
+  border-radius: 5px;
+}
+
+.header .cta_button button {
+  padding: 10px 20px;
+  background-color: #ffffff;
+  color: #3B3B3B;
+  font-weight: 600;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 4px;
+}
+
+.hamburger span {
+  height: 3px;
+  width: 25px;
+  background-color: #3E185B;
+  border-radius: 2px;
+}
+
+
+.mobile_cta_button {
+    display: none;
+}
+
+
+main {
+  position: relative;
+  width: 100%;
+  height: 650px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* عمودي: وسط */
+  overflow: hidden; /* باش مايبانوش الأشياء خارج الإطار */
+}
+
+main img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* باش الصورة تغطي كامل المساحة */
+  z-index: 1;
+}
+
+main h1 {
+  position: relative;
+  z-index: 2;
+  font-weight: 600;
+  color: white; /* مثلا باش يبان فوق الصورة */
+  font-size: 5.1rem;
+  line-height: 90px;
+  text-align: left;
+  margin: 0;
+  padding: 70px 110px; /* باش مايلتصقش بالجوانب */
+}
+
+
+main .search {
+            position: relative;
+            z-index: 2;
+            padding: 0px 110px;
+        }
+
+        main .search input {
+            width: 100%;
+            padding: 20px 60px 20px 20px;
+            border-radius: 10px;
+            border: none;
+            font-size: 16px;
+            outline: none;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+        }
+
+        main .search input::placeholder {
+            color: #888;
+            font-weight: 400;
+        }
+
+        main .search .search-btn {
+            position: absolute;
+            right: 125px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #3E185B;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(62, 24, 91, 0.3);
+            border: none;
+        }
+
+
+        main .search .search-btn img {
+            width: 30px;
+            height: 30px;
+        }
+
+
+
+@media (max-width: 900px) {
+  .header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    position: relative;
+  }
+
+  .hamburger {
     display: flex;
-    text-align: center;
+    margin-left: auto;
+    margin-top: 0;
+  }
+
+  .header .menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: white;
+    z-index: 999;
+  }
+
+  .header .menu ul {
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+    padding: 15px 20px;
+    margin: 0;
+    list-style: none;
+  }
+
+  .header .menu ul.show {
+    display: flex;
+  }
+
+  .header .cta_button {
+    display: none;
+  }
+
+  .header .menu .mobile_cta_button {
+    display: block;
+  }
+
+  .header .menu .mobile_cta_button button {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    background-color: #3E185B;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
 }
 
