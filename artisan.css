@@ -1,0 +1,399 @@
+body {
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    zoom: 0.9;
+  }
+  
+  .prestataires-header {
+    background-color: #fff;
+    padding: 15px 25px;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.search-container {
+    position: relative;
+    margin-left: -140px;
+    width: 620px; 
+    height: 44px;
+    display: flex;
+    align-items: center;
+    border: 0.7px solid #CECECE;
+    border-radius: 5px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  
+
+  
+.search-input {
+    flex: 1;
+    height: 100%;
+    border: none;
+    padding: 0 12px; 
+    font-size: 14.4px; 
+    font-family: 'Open Sans', sans-serif;
+    color: #838383;
+    letter-spacing: -0.01em;
+    outline: none;
+  }
+  
+  
+  .search-icon-wrapper {
+    width: 61px;
+    height: 100%;
+    background-color: #3E185B;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .search-icon {
+    width: 20px; 
+    height: 20px;
+  }
+  
+  
+
+  
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 25px;
+  }
+  
+  
+  .logo {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logo-img {
+    width: 32px;
+    height: 32px;
+    margin-right: 8px;
+  }
+  
+  .logo-text {
+    font-family: 'Poppins', sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    color: #3E185B;
+  }
+  
+  .dot {
+    color: #8E7B9C;
+  }
+  
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .icon {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .orders,
+  .switch {
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  
+  .orders {
+    color: #62646A;
+  }
+  
+  .switch {
+    color: #8E7B9C;
+  }
+  
+  .profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+  
+  .line {
+    border-top: 1px solid #E3E3E3;
+    margin: 15px 0;
+  }
+  
+  .categories-bar {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .categories-slider {
+    display: flex;
+    gap: 15px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .categories-slider::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .category {
+    flex: 0 0 auto;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    color: #725489;
+    white-space: nowrap;
+  }
+  
+  .arrow-icon {
+    width: 25px;
+    height: 25px;
+    margin-left: 10px;
+    cursor: pointer;
+  }
+  
+
+  .page-container {
+    display: flex;
+    gap: 20px;
+    padding: 30px;
+    font-family: 'Open Sans', sans-serif;
+  }
+  
+  /* LEFT SECTION */
+  .left-section {
+    width: 65%;
+  }
+  
+  /* Profile Header */
+  .profile-header {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .profile-img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+  }
+  
+  .profile-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .artisan-name {
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    font-size: 28px;
+    color: #3E185B;
+  }
+  
+  .reviews {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .star-icon {
+    width: 20.2px;
+    height: 18.42px;
+  }
+  
+  .rating {
+    font-size: 22px;
+    font-weight: bold;
+    font-family: 'Open Sans';
+  }
+  
+  .review-count {
+    font-size: 22px;
+    font-weight: 600;
+    color: #84659C;
+  }
+  
+  .location {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+  }
+  
+  .location-icon {
+    width: 23.57px;
+    height: 22.75px;
+  }
+  
+  .location-text {
+    width: 155.72px;
+    color: #000;
+  }
+  
+  /* Price */
+  .price-section {
+    margin-top: 20px;
+  }
+  
+  .price {
+    font-family: 'Poppins';
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: -1%;
+  }
+  
+  /* Category & Descriptions */
+  .category {
+    font-family: 'Poppins';
+    font-weight: bold;
+    letter-spacing: -1%;
+    color: #3E185B;
+    margin-top: 15px;
+  }
+  
+  .mini-description {
+    font-size: 21px;
+    font-weight: 600;
+    color: #623882;
+    margin-top: 10px;
+  }
+  
+  .description {
+    font-size: 21px;
+    color: #623882;
+    margin-top: 10px;
+  }
+  
+  /* SLIDER */
+  .slider-section {
+    margin-top: 20px;
+  }
+  
+  .big-slider {
+    width: 1008px;
+    height: 476px;
+    border-radius: 10px;
+  }
+  
+  .small-slider {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  .small-slider img {
+    width: 216px;
+    height: 188px;
+    border-radius: 10px;
+  }
+  
+  /* REVIEWS */
+  .reviews-title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #3E185B;
+    margin-top: 20px;
+  }
+  
+  .review-box {
+    width: 1019px;
+    height: 255px;
+    border: 1px solid #B8B8B8;
+    border-radius: 10px;
+    display: flex;
+    padding: 20px;
+    margin-top: 15px;
+    gap: 20px;
+  }
+  
+  .review-user {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+  }
+  
+  .review-content {
+    flex: 1;
+  }
+  
+  .review-name {
+    font-weight: bold;
+    font-size: 20px;
+    color: #3E185B;
+  }
+  
+  .line {
+    height: 1px;
+    background-color: #B8B8B8;
+    width: 90%;
+    margin: 5px 0;
+  }
+  
+  .review-stars {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .review-stars img {
+    width: 20.2px;
+    height: 18.42px;
+  }
+  
+  .rating-text {
+    font-weight: bold;
+    color: #3E185B;
+  }
+  
+  .review-text {
+    font-weight: 600;
+    font-size: 17px;
+    color: #623882;
+  }
+  
+  /* RIGHT SECTION */
+  .right-section {
+    width: 35%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .calendar-container {
+    width: 605px;
+    height: 869px;
+    border-radius: 20px;
+    border: 0.8px solid #BEBEBE;
+    overflow: hidden;
+  }
+  
+  .calendar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .service-button {
+    width: 604px;
+    height: 87px;
+    border-radius: 10px;
+    background-color: #3E185B;
+    color: white;
+    font-size: 25px;
+    font-family: 'Poppins';
+    font-weight: bold;
+    letter-spacing: -1%;
+    border: none;
+    cursor: pointer;
+  }
+  
