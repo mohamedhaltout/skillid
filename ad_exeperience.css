@@ -92,10 +92,10 @@ body {
     font-weight: 600;
 }
 
-/* Styles for Textarea */
+
 .form-input textarea {
     width: 70%;
-    height: 80px; /* Increased height for detailed description */
+    height: 80px; 
     padding: 10px 12px;
     font-size: 12px;
     font-weight: 600;
@@ -105,7 +105,7 @@ body {
     box-shadow: 0 4px 4px rgba(222, 222, 222, 0.25);
     box-sizing: border-box;
     outline: none;
-    resize: vertical; /* Allow vertical resizing */
+    resize: vertical; 
 }
 
 .form-input textarea::placeholder {
@@ -154,7 +154,7 @@ body {
     font-weight: 600;
 }
 
-/* Styles for Custom Select (Dropdowns) */
+
 .custom-select {
     position: relative;
     width: 70%;
@@ -196,17 +196,17 @@ body {
     pointer-events: none;
 }
 
-/* Styles for multiple media upload rectangles */
+
 .media-upload-container {
     display: flex;
     gap: 15px;
-    margin-left: 50px; /* Space between upload rectangles */
-    width: 70%; /* Match the width of other inputs */
-    justify-content: flex-start; /* Align rectangles to the left */
+    margin-left: 50px; 
+    width: 70%; 
+    justify-content: flex-start; 
 }
 
 .media-upload-button {
-    width: 50px; /* Size of each rectangle */
+    width: 50px; 
     height: 50px;
     border: 1px dashed #B4B4B4;
     border-radius: 8px;
@@ -219,7 +219,7 @@ body {
     position: relative;
     box-shadow: 0 4px 4px rgba(222, 222, 222, 0.25);
     transition: all 0.2s ease-in-out;
-    flex-shrink: 0; /* Prevent shrinking on smaller screens */
+    flex-shrink: 0; 
 }
 
 .media-upload-button:hover {
@@ -228,12 +228,12 @@ body {
 }
 
 .media-upload-button img.add-icon {
-    width: 20px; /* Size of the add icon */
+    width: 20px; 
     height: 20px;
 }
 
 
-/* Styles for Checkbox Group */
+
 .checkbox-group {
     align-items: center;
 }
@@ -279,7 +279,7 @@ body {
     background-position: center;
 }
 
-/* Shared components */
+
 .info-text {
     text-align: center;
     font-size: 11px;
@@ -330,7 +330,7 @@ body {
     flex-shrink: 0;
 }
 
-/* Responsive Adjustments */
+
 @media (max-width: 1024px) {
     .left-decoration {
         width: 250px;
@@ -361,19 +361,19 @@ body {
     .form-input input[type="text"],
     .form-input input[type="tel"],
     .custom-select,
-    .form-input textarea { /* Added textarea to responsive adjustments */
+    .form-input textarea { 
         width: 80%;
         height: 40px;
         font-size: 11px;
     }
     
     .form-input input::placeholder,
-    .form-input textarea::placeholder { /* Added textarea placeholder */
+    .form-input textarea::placeholder { 
         font-size: 11px;
     }
 
     .form-input textarea {
-        height: 70px; /* Adjusted textarea height */
+        height: 70px; 
     }
 
     .custom-select select {
@@ -494,7 +494,7 @@ body {
     .form-input input[type="text"],
     .form-input input[type="tel"],
     .custom-select,
-    .form-input textarea { /* Added textarea to responsive adjustments */
+    .form-input textarea { 
         width: 85%;
         max-width: 300px;
         height: 38px;
@@ -503,12 +503,12 @@ body {
     }
 
     .form-input input::placeholder,
-    .form-input textarea::placeholder { /* Added textarea placeholder */
+    .form-input textarea::placeholder { 
         font-size: 10px;
     }
 
     .form-input textarea {
-        height: 60px; /* Adjusted textarea height for mobile */
+        height: 60px; 
     }
 
     .custom-select select {
@@ -630,19 +630,19 @@ body {
     .form-input input[type="text"],
     .form-input input[type="tel"],
     .custom-select,
-    .form-input textarea { /* Added textarea to responsive adjustments */
+    .form-input textarea { 
         width: 95%;
         height: 35px;
         font-size: 9px;
     }
 
     .form-input input::placeholder,
-    .form-input textarea::placeholder { /* Added textarea placeholder */
+    .form-input textarea::placeholder {
         font-size: 9px;
     }
 
     .form-input textarea {
-        height: 50px; /* Adjusted textarea height for smaller mobile */
+        height: 50px;
     }
 
     .custom-select select {

@@ -73,7 +73,7 @@ body {
 
 .form-input input[type="text"],
 .form-input input[type="tel"],
-.form-input input[type="date"] { /* Added type="date" here */
+.form-input input[type="date"] { 
     width: 70%;
     height: 42px;
     padding: 0 12px;
@@ -93,13 +93,13 @@ body {
     font-weight: 600;
 }
 
-/* Specific styling for date input to ensure consistent text color */
+
 .form-input input[type="date"] {
-    color: #725489; /* Ensure date text is the same color as other inputs */
+    color: #725489; 
 }
 
 
-/* Styles for Textarea */
+
 .form-input textarea {
     width: 70%;
     height: 80px;
@@ -161,7 +161,7 @@ body {
     font-weight: 600;
 }
 
-/* Styles for Custom Select (Dropdowns) */
+
 .custom-select {
     position: relative;
     width: 70%;
@@ -203,7 +203,7 @@ body {
     pointer-events: none;
 }
 
-/* Styles for multiple media upload rectangles */
+
 .media-upload-container {
     display: flex;
     gap: 15px;
@@ -239,7 +239,7 @@ body {
 }
 
 
-/* Styles for Checkbox Group */
+
 .checkbox-group {
     align-items: center;
 }
@@ -285,7 +285,7 @@ body {
     background-position: center;
 }
 
-/* Shared components */
+
 .info-text {
     text-align: center;
     font-size: 11px;
@@ -336,7 +336,7 @@ body {
     flex-shrink: 0;
 }
 
-/* Responsive Adjustments */
+
 @media (max-width: 1024px) {
     .left-decoration {
         width: 250px;
@@ -366,7 +366,7 @@ body {
 
     .form-input input[type="text"],
     .form-input input[type="tel"],
-    .form-input input[type="date"], /* Added type="date" */
+    .form-input input[type="date"], 
     .custom-select,
     .form-input textarea {
         width: 80%;
@@ -500,7 +500,7 @@ body {
 
     .form-input input[type="text"],
     .form-input input[type="tel"],
-    .form-input input[type="date"], /* Added type="date" */
+    .form-input input[type="date"], 
     .custom-select,
     .form-input textarea {
         width: 85%;
@@ -637,7 +637,7 @@ body {
 
     .form-input input[type="text"],
     .form-input input[type="tel"],
-    .form-input input[type="date"], /* Added type="date" */
+    .form-input input[type="date"], 
     .custom-select,
     .form-input textarea {
         width: 95%;
