@@ -1081,6 +1081,59 @@ padding-left: 3px;
 }
 
 
+.cta-banner {
+  width: 1300px;
+  height: 250px;
+  background-image: url('img/back_cta_home.png');
+  background-size: cover;
+  background-position: center;
+
+  border-radius: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+
+  margin: 110px auto; 
+}
+
+.banner-content {
+  text-align: center;
+  color: white;
+}
+
+.banner-text {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+
+  font-size: 55px;
+  line-height: 35px;
+  letter-spacing: -1.5px;
+  margin-bottom: 40px;
+}
+
+.highlight-text {
+  font-family: 'Domine', serif;
+}
+
+.cta-button {
+
+    width: 140px;
+  height: 45px;
+  border-radius: 6px;
+  background-color: white;
+  color: #3E185B;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 18px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px auto;
+}
+
 
 @media (max-width: 1200px) {
     .header {
@@ -1467,6 +1520,24 @@ padding-left: 3px;
         height: 22px;
         margin: 0 8px; 
     }
+
+      .cta-banner {
+    width: 95%;
+    height: 200px;
+    margin: 90px auto;
+  }
+
+  .banner-text {
+    font-size: 48px;
+    line-height: 32px;
+    margin-bottom: 35px;
+  }
+
+  .cta-button {
+    width: 130px;
+    height: 42px;
+    font-size: 17px;
+  }
 }
 
 
@@ -1867,6 +1938,25 @@ padding-left: 3px;
         height: 20px;
         margin: 0 6px;
     }
+
+    .cta-banner {
+    height: 180px;
+    margin: 60px auto;
+    border-radius: 15px;
+  }
+
+  .banner-text {
+    font-size: 38px;
+    line-height: 28px;
+    letter-spacing: -1px;
+    margin-bottom: 25px;
+  }
+
+  .cta-button {
+    width: 120px;
+    height: 40px;
+    font-size: 16px;
+  }
 }
 
 
@@ -2298,6 +2388,26 @@ padding-left: 3px;
         height: 18px;
         margin: 0; 
     }
+
+
+    .cta-banner {
+    height: 150px;
+    margin: 40px auto;
+    border-radius: 10px;
+  }
+
+  .banner-text {
+    font-size: 30px;
+    line-height: 25px;
+    letter-spacing: -0.8px;
+    margin-bottom: 20px;
+  }
+
+  .cta-button {
+    width: 100px;
+    height: 35px;
+    font-size: 14px;
+  }
 }
 
 
@@ -2661,6 +2771,26 @@ padding-left: 3px;
     .language-selector span {
         font-size: 13px;
     }
+
+
+    .cta-banner {
+    height: 120px;
+    margin: 30px auto;
+    border-radius: 8px;
+  }
+
+  .banner-text {
+    font-size: 24px;
+    line-height: 20px;
+    letter-spacing: -0.5px;
+    margin-bottom: 15px;
+  }
+
+  .cta-button {
+    width: 90px;
+    height: 30px;
+    font-size: 13px;
+  }
 }
 
 
