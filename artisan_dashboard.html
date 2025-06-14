@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prestataire Dashboard - Skilled</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="artisan_dashboard.css">
+</head>
+<body>
+    <header class="main-header">
+        <div class="header-left">
+            <img src="img/skilled_logo.svg" alt="Skilled Logo" class="logo-image">
+            <div class="logo-text">Skilled<span class="logo-dot">.</span></div>
+        </div>
+        <div class="header-right">
+            <button class="logout-button">Logout</button>
+            <span class="client-name">Mohamed Haltout</span>
+            <img src="img/profil.svg" alt="Profile Picture" class="profile-image">
+        </div>
+    </header>
+    <div class="header-divider"></div>
+
+    <main class="dashboard-content">
+        <h1 class="welcome-message">Welcome, Mohamed Haltout</h1>
+
+        <section class="summary-cards">
+            <div class="card received-requests">
+                <div class="card-number">2</div>
+                <div class="card-text">Demandes reçues</div>
+            </div>
+            <div class="card accepted-requests">
+                <div class="card-number">1</div>
+                <div class="card-text">Demandes acceptées</div>
+            </div>
+            <div class="card completed-projects">
+                <div class="card-number">1</div>
+                <div class="card-text">Projets terminés</div>
+            </div>
+            <div class="card average-rating">
+                <div class="card-number">4.6</div>
+                <div class="card-text">Note moyenne</div>
+            </div>
+        </section>
+
+        <section class="demandes-section">
+            <h2 class="section-title">Demandes en attente</h2>
+            <div class="demande-list">
+                <div class="demande-item">
+                    <div class="demande-details">
+                        <div class="detail-group">
+                            <span class="detail-label">Client:</span>
+                            <span class="detail-value">Youssef Lahlou</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Date début:</span>
+                            <span class="detail-value">2024-07-02</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">City:</span>
+                            <span class="detail-value">Casablanca</span>
+                        </div>
+                    </div>
+                    <div class="demande-actions">
+                        <button class="button view-request-button">Voir la demande</button>
+                        <button class="button refuse-button">Refuser</button>
+                        <button class="button accept-button">Accepter</button>
+                    </div>
+                </div>
+                </div>
+        </section>
+
+        <section class="accepted-demandes-section">
+            <h2 class="section-title">Demandes acceptées</h2>
+            <div class="accepted-demande-list">
+                <div class="accepted-demande-item">
+                    <div class="accepted-demande-details">
+                        <div class="detail-group">
+                            <span class="detail-label">Client:</span>
+                            <span class="detail-value">Youssef Lahlou</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Date début:</span>
+                            <span class="detail-value">2024-07-02</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">City:</span>
+                            <span class="detail-value">Casablanca</span>
+                        </div>
+                    </div>
+                    <div class="accepted-demande-actions">
+                        <button class="button create-devis-button">Créer un devis</button>
+                    </div>
+                </div>
+                </div>
+        </section>
+
+        <section class="experiences-section">
+            <h2 class="section-title">Vos expériences</h2>
+            <div class="experience-list">
+                <div class="experience-item">
+                    <div class="experience-details">
+                        <div class="detail-group">
+                            <span class="detail-label">Projet:</span>
+                            <span class="detail-value">Rénovation cuisine</span>
+                        </div>
+                        <div class="detail-group">
+                            <span class="detail-label">Année:</span>
+                            <span class="detail-value">2023</span>
+                        </div>
+                    </div>
+                    <div class="experience-actions">
+                        <button class="button modify-button">Modifier</button>
+                    </div>
+                </div>
+                </div>
+        </section>
+
+        <section class="dashboard-buttons">
+            <button class="button large-button add-experience-button">Ajouter une nouvelle expérience</button>
+            <button class="button large-button manage-availability-button">Gérer mes disponibilités</button>
+            <button class="button large-button view-payments-button">Voir mes paiements</button>
+        </section>
+    </main>
+</body>
+</html>
