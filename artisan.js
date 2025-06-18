@@ -47,6 +47,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     requestServiceBtn.addEventListener('click', function() {
         const prestataireId = this.dataset.prestataireId;
-        window.location.href = `demande_service.php?id_prestataire=${prestataireId}`;
+        const requiresLogin = this.dataset.requiresLogin === 'true';
+
+        if (requiresLogin && !isLoggedIn) {
+            window.location.href = 'login.php';
+        } else {
+            window.location.href = `demande_service.php?id_prestataire=${prestataireId}`;
+        }
     });
 });

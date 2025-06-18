@@ -1,39 +1,39 @@
 <?php
 session_start();
-include 'config.php';
+include 'config.php'; // Include your database configuration file
 
-if (!isset($_SESSION['id_utilisateur']) || $_SESSION['role'] !== 'client') {
-    header("Location: login.php");
-    exit();
+$devis_id = isset($_GET['id_devis']) ? $_GET['id_devis'] : null;
+$client_secret = isset($_GET['client_secret']) ? $_GET['client_secret'] : null;
+$amount = null;
+$error_message = '';
+
+if (isset($_SESSION['payment_error'])) {
+    $error_message = $_SESSION['payment_error'];
+    unset($_SESSION['payment_error']); // Clear the error after displaying
 }
 
-$id_devis = isset($_GET['id_devis']) ? intval($_GET['id_devis']) : 0;
-$acompte = 0;
-$devis_details = null;
+if ($devis_id) {
+    try {
+        $pdo = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-if ($id_devis > 0) {
-    $stmt = $conn->prepare("SELECT d.cout_total, d.acompte, r.description_service FROM Devis d JOIN Reservation r ON d.id_reservation = r.id_reservation WHERE d.id_devis = ?");
-    $stmt->bind_param("i", $id_devis);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $devis_details = $result->fetch_assoc();
-    $stmt->close();
+        // Fetch devis details to get the acompte amount
+        $stmt = $pdo->prepare("SELECT acompte FROM Devis WHERE id_devis = ?");
+        $stmt->execute([$devis_id]);
+        $devis = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($devis_details) {
-        $acompte = $devis_details['acompte'];
-    } else {
-        $_SESSION['message'] = "Devis not found.";
-        $_SESSION['message_type'] = "error";
-        header("Location: client_dashboard.php");
-        exit();
+        if ($devis) {
+            $amount = $devis['acompte'];
+        } else {
+            $error_message = "Devis not found.";
+        }
+    } catch (PDOException $e) {
+        error_log("Database error fetching devis: " . $e->getMessage());
+        $error_message = "Error fetching devis details.";
     }
 } else {
-    $_SESSION['message'] = "Invalid Devis ID.";
-    $_SESSION['message_type'] = "error";
-    header("Location: client_dashboard.php");
-    exit();
+    $error_message = "No Devis ID provided.";
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -41,112 +41,185 @@ if ($id_devis > 0) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Payment Page</title>
-    <link rel="stylesheet" href="client_dashboard.css"> <!-- Or a specific payment CSS -->
+    <link rel="stylesheet" href="style_home.css"> <!-- Assuming a general CSS file -->
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
+            background-color: #f4f7f6;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            margin: 0;
         }
         .payment-container {
             background-color: #fff;
             padding: 30px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             width: 100%;
             max-width: 500px;
-        }
-        .payment-container h2 {
             text-align: center;
+        }
+        h1 {
             color: #333;
             margin-bottom: 20px;
         }
-        .payment-details p {
-            font-size: 1.1em;
-            margin-bottom: 10px;
-        }
-        .payment-details span {
+        .amount-display {
+            font-size: 1.5em;
             font-weight: bold;
             color: #007bff;
+            margin-bottom: 25px;
+        }
+        #payment-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
         .form-group {
-            margin-bottom: 15px;
+            text-align: left;
         }
-        .form-group label {
+        label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
             color: #555;
+            font-weight: bold;
         }
-        .form-group input[type="text"],
-        .form-group select {
-            width: calc(100% - 20px);
-            padding: 10px;
-            border: 1px solid #ddd;
+        #card-element {
+            border: 1px solid #ced4da;
             border-radius: 4px;
-            font-size: 1em;
+            padding: 12px;
+            background-color: #f8f9fa;
         }
-        .form-group input[type="submit"] {
-            background-color: #28a745;
+        button {
+            background-color: #007bff;
             color: white;
             padding: 12px 20px;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
-            font-size: 1.1em;
-            width: 100%;
+            font-size: 1em;
             transition: background-color 0.3s ease;
         }
-        .form-group input[type="submit"]:hover {
-            background-color: #218838;
+        button:hover {
+            background-color: #0056b3;
         }
         .error-message {
-            color: red;
-            text-align: center;
-            margin-bottom: 15px;
+            color: #dc3545;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .success-message {
+            color: #28a745;
+            margin-top: 15px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div class="payment-container">
-        <h2>Complete Your Payment</h2>
-        <?php if (isset($_SESSION['payment_error'])): ?>
-            <p class="error-message"><?php echo $_SESSION['payment_error']; unset($_SESSION['payment_error']); ?></p>
+        <h1>Complete Your Payment</h1>
+        <?php if ($amount): ?>
+            <p class="amount-display">Amount to Pay: <?php echo htmlspecialchars(number_format($amount, 2)); ?> MAD</p>
         <?php endif; ?>
 
-        <div class="payment-details">
-            <p>Devis ID: <span><?php echo htmlspecialchars($id_devis); ?></span></p>
-            <p>Description: <span><?php echo htmlspecialchars($devis_details['description_service']); ?></span></p>
-            <p>Total Amount: <span><?php echo htmlspecialchars($devis_details['cout_total']); ?> MAD</span></p>
-            <p>Deposit Required: <span><?php echo htmlspecialchars($acompte); ?> MAD</span></p>
-        </div>
+        <?php if ($error_message): ?>
+            <div class="error-message"><?php echo htmlspecialchars($error_message); ?></div>
+        <?php endif; ?>
 
-        <form action="process_payment.php" method="POST">
-            <input type="hidden" name="devis_id" value="<?php echo htmlspecialchars($id_devis); ?>">
-            <input type="hidden" name="amount" value="<?php echo htmlspecialchars($acompte); ?>">
-            <input type="hidden" name="payment_type" value="acompte">
+        <?php if ($devis_id && $amount): ?>
+            <form id="payment-form" action="process_payment.php" method="post">
+                <div class="form-group">
+                    <label for="card-element">Credit or debit card</label>
+                    <div id="card-element">
+                        <!-- A Stripe Element will be inserted here. -->
+                    </div>
+                    <!-- Used to display form errors. -->
+                    <div id="card-errors" role="alert" class="error-message"></div>
+                </div>
 
-            <div class="form-group">
-                <label for="payment_method">Payment Method:</label>
-                <select id="payment_method" name="payment_method" required>
-                    <option value="">Select Method</option>
-                    <option value="credit_card">Credit Card</option>
-                    <option value="paypal">PayPal</option>
-                    <option value="bank_transfer">Bank Transfer</option>
-                </select>
-            </div>
+                <input type="hidden" name="devis_id" value="<?php echo htmlspecialchars($devis_id); ?>">
+                <input type="hidden" name="amount" value="<?php echo htmlspecialchars($amount); ?>">
+                <?php if ($client_secret): ?>
+                    <input type="hidden" name="payment_intent_id" id="payment-intent-id" value="">
+                <?php endif; ?>
 
-            <!-- Add more payment fields as needed (e.g., card number, expiry, CVV) -->
-            <!-- For simplicity, we'll just have a method selection for now -->
-
-            <div class="form-group">
-                <input type="submit" value="Pay Now">
-            </div>
-        </form>
+                <button id="submit-button">Pay Now</button>
+            </form>
+        <?php else: ?>
+            <p class="error-message">Unable to process payment. Please ensure a valid Devis ID is provided.</p>
+        <?php endif; ?>
     </div>
+
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        const stripe = Stripe('<?php echo STRIPE_PUBLISHABLE_KEY; ?>');
+        const elements = stripe.elements();
+        const card = elements.create('card');
+        card.mount('#card-element');
+
+        const form = document.getElementById('payment-form');
+        const submitButton = document.getElementById('submit-button');
+        const cardErrors = document.getElementById('card-errors');
+        const clientSecret = '<?php echo $client_secret; ?>';
+        const devisId = '<?php echo htmlspecialchars($devis_id); ?>';
+        const amount = '<?php echo htmlspecialchars($amount); ?>';
+
+        card.on('change', function(event) {
+            if (event.error) {
+                cardErrors.textContent = event.error.message;
+            } else {
+                cardErrors.textContent = '';
+            }
+            submitButton.disabled = !event.complete;
+        });
+
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            submitButton.disabled = true;
+            cardErrors.textContent = '';
+
+            if (clientSecret) {
+                // Confirm the PaymentIntent for 3D Secure authentication
+                const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
+                    payment_method: {
+                        card: card,
+                    }
+                });
+
+                if (error) {
+                    cardErrors.textContent = error.message;
+                    submitButton.disabled = false;
+                } else if (paymentIntent.status === 'succeeded') {
+                    // Payment succeeded after 3D Secure, submit to backend to update database
+                    document.getElementById('payment-intent-id').value = paymentIntent.id;
+                    form.submit(); // Submit the form to process_payment.php
+                } else {
+                    cardErrors.textContent = 'Payment failed or requires further action: ' + paymentIntent.status;
+                    submitButton.disabled = false;
+                }
+            } else {
+                // Create PaymentMethod and then submit to backend
+                const { paymentMethod, error } = await stripe.createPaymentMethod({
+                    type: 'card',
+                    card: card,
+                });
+
+                if (error) {
+                    cardErrors.textContent = error.message;
+                    submitButton.disabled = false;
+                } else {
+                    // Add payment_method_id to the form and submit
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.setAttribute('type', 'hidden');
+                    hiddenInput.setAttribute('name', 'payment_method_id');
+                    hiddenInput.setAttribute('value', paymentMethod.id);
+                    form.appendChild(hiddenInput);
+
+                    form.submit(); // Submit the form to process_payment.php
+                }
+            }
+        });
+    </script>
 </body>
 </html>

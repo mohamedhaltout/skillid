@@ -172,31 +172,6 @@ if ($stmt === false) {
     $stmt->close();
 }
 
-// Fetch Acompte Payments and calculate total earnings
-$acompte_payments = [];
-$total_earnings = 0;
-$stmt = $conn->prepare("SELECT p.id_paiement, p.montant, p.date_paiement, d.cout_total AS devis_montant,
-                        u.nom AS client_nom, u.prenom AS client_prenom, r.description_service
-                        FROM Paiement p
-                        JOIN Devis d ON p.id_devis = d.id_devis
-                        JOIN Reservation r ON d.id_reservation = r.id_reservation
-                        JOIN Client cl ON r.id_client = cl.id_client
-                        JOIN Utilisateur u ON cl.id_utilisateur = u.id_utilisateur
-                        WHERE d.id_prestataire = ? AND p.type_paiement = 'acompte' AND p.statut_paiement = 'effectué'");
-if ($stmt === false) {
-    error_log("artisan_dashboard.php: Failed to prepare statement for acompte payments: " . $conn->error);
-} else {
-    $stmt->bind_param("i", $artisan_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    while ($row = $result->fetch_assoc()) {
-        $acompte_payments[] = $row;
-        $total_earnings += $row['montant'];
-    }
-    $stmt->close();
-}
-error_log("Acompte Payments: " . print_r($acompte_payments, true));
-error_log("Total Earnings: " . $total_earnings);
 
 // Fetch paid devis
 $paid_devis = [];
@@ -306,10 +281,6 @@ $stmt->close();
             <div class="card average-rating">
                 <div class="card-number"><?php echo $average_rating; ?></div>
                 <div class="card-text">Note moyenne</div>
-            </div>
-            <div class="card total-earnings status-paid">
-                <div class="card-number"><?php echo number_format($total_earnings, 2); ?> MAD</div>
-                <div class="card-text">Gains totaux (Acompte)</div>
             </div>
         </section>
 
@@ -513,37 +484,6 @@ $stmt->close();
         </section>
 
 
-        <section class="acompte-payments-section">
-            <h2 class="section-title">Paiements d'acompte reçus</h2>
-            <div class="acompte-payments-list">
-                <?php if (empty($acompte_payments)): ?>
-                    <p>Aucun paiement d'acompte reçu pour le moment.</p>
-                <?php else: ?>
-                    <?php foreach ($acompte_payments as $payment): ?>
-                        <div class="payment-item">
-                            <div class="payment-details">
-                                <div class="detail-group">
-                                    <span class="detail-label">Client:</span>
-                                    <span class="detail-value"><?php echo htmlspecialchars($payment['client_nom'] . ' ' . $payment['client_prenom']); ?></span>
-                                </div>
-                                <div class="detail-group">
-                                    <span class="detail-label">Service:</span>
-                                    <span class="detail-value"><?php echo htmlspecialchars($payment['description_service']); ?></span>
-                                </div>
-                                <div class="detail-group">
-                                    <span class="detail-label">Montant Acompte:</span>
-                                    <span class="detail-value"><?php echo htmlspecialchars(number_format($payment['montant'], 2)); ?> MAD</span>
-                                </div>
-                                <div class="detail-group">
-                                    <span class="detail-label">Date de paiement:</span>
-                                    <span class="detail-value"><?php echo htmlspecialchars($payment['date_paiement']); ?></span>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
-        </section>
 
         <section class="meeting-confirmation-section">
             <h2 class="section-title">Confirmer la réunion</h2>

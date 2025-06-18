@@ -133,8 +133,10 @@ CREATE TABLE Paiement (
     date_paiement DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     statut_paiement ENUM('en_attente', 'effectué', 'échoué') NOT NULL,
     reference_transaction VARCHAR(255),
+    stripe_payment_intent_id VARCHAR(255) NULL,
     FOREIGN KEY (id_devis) REFERENCES Devis(id_devis)
 );
+
 
 -- ADMIN
 CREATE TABLE Admin (

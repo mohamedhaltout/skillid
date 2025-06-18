@@ -3,10 +3,6 @@ session_start();
 require 'config.php';
 
 // Check if the user is logged in and is a client
-if (!isset($_SESSION['id_utilisateur']) || $_SESSION['role'] !== 'client') {
-    header("Location: login.php");
-    exit();
-}
 
 $artisan_profile_photo = get_image_path('', 'prestataire'); // Default profile photo
 if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] === 'prestataire') {
@@ -36,7 +32,13 @@ $sql = "SELECT p.id_prestataire, p.photo, p.tarif_journalier, p.ville, p.pays,
                (SELECT AVG(note) FROM Evaluation e WHERE e.id_prestataire = p.id_prestataire) AS avg_rating,
                (SELECT COUNT(*) FROM Evaluation e WHERE e.id_prestataire = p.id_prestataire) AS review_count,
                (SELECT description FROM Experience_prestataire ep WHERE ep.id_prestataire = p.id_prestataire ORDER BY date_project DESC LIMIT 1) AS latest_experience,
-               (SELECT CASE WHEN EXISTS (SELECT 1 FROM Devis d WHERE d.id_prestataire = p.id_prestataire AND d.date_fin_travaux >= CURDATE()) THEN 'unavailable' ELSE 'available' END) AS disponibilite_status
+               (SELECT CASE WHEN EXISTS (SELECT 1 FROM Devis d WHERE d.id_prestataire = p.id_prestataire AND d.date_fin_travaux >= CURDATE()) THEN 'unavailable' ELSE 'available' END) AS disponibilite_status,
+               (SELECT me.chemin_fichier
+                FROM Experience_prestataire ep_inner
+                JOIN Media_experience me ON ep_inner.id_experience = me.id_experience
+                WHERE ep_inner.id_prestataire = p.id_prestataire
+                ORDER BY ep_inner.date_project DESC, me.id_media ASC
+                LIMIT 1) AS cover_image
        FROM Prestataire p
        JOIN Utilisateur u ON p.id_utilisateur = u.id_utilisateur
        JOIN Categories c ON p.id_categorie = c.id_categorie
@@ -105,28 +107,46 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
 </head>
 <body>
   <header class="prestataires-header">
+<style>
+    .login-button, .signup-button {
+      background-color: #007bff;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 5px;
+      text-decoration: none;
+      margin-left: 10px;
+    }
+    .login-button:hover, .signup-button:hover {
+      opacity: 0.9;
+    }
+  </style>
     <div class="header-top">
       <div class="logo">
         <img src="img/skilled_logo.svg" alt="Skilled Logo" class="logo-img" />
         <span class="logo-text">Skilled<span class="dot">.</span></span>
       </div>
       <div class="header-right">
-        <img src="img/Notification.svg" class="icon" alt="Notifications" />
-        <img src="img/message.svg" class="icon" alt="Messages" />
-        <img src="img/favorite.svg" class="icon" alt="Favorites" />
-        <span class="orders">Orders</span>
-        <span class="switch">Switch to Artisans</span>
-        <div class="profile-dropdown">
-            <img src="<?= htmlspecialchars($artisan_profile_photo) ?>" class="profile-pic" alt="Profile" onclick="toggleProfileDropdown(this, event)" />
-            <div class="dropdown-content">
-              <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'client'): ?>
-                <a href="client_profile.php">My Profile</a>
-              <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'prestataire'): ?>
-                <a href="artisan_profile.php">My Artisan Profile</a>
-              <?php endif; ?>
-              <a href="logout.php">Logout</a>
+        <?php if (isset($_SESSION['id_utilisateur'])): ?>
+            <img src="img/Notification.svg" class="icon" alt="Notifications" />
+            <img src="img/message.svg" class="icon" alt="Messages" />
+            <img src="img/favorite.svg" class="icon" alt="Favorites" />
+            <span class="orders">Orders</span>
+            <span class="switch">Switch to Artisans</span>
+            <div class="profile-dropdown">
+                <img src="<?= htmlspecialchars($artisan_profile_photo) ?>" class="profile-pic" alt="Profile" onclick="toggleProfileDropdown(this, event)" />
+                <div class="dropdown-content">
+                  <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'client'): ?>
+                    <a href="client_profile.php">My Profile</a>
+                  <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'prestataire'): ?>
+                    <a href="artisan_profile.php">My Artisan Profile</a>
+                  <?php endif; ?>
+                  <a href="logout.php">Logout</a>
+                </div>
             </div>
-        </div>
+        <?php else: ?>
+            <a href="login.php" class="login-button">Login</a>
+            <a href="sign_up_client.php" class="signup-button">Sign Up</a>
+        <?php endif; ?>
       </div>
     </div>
     <div class="line"></div>
@@ -268,7 +288,7 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
                 <?php foreach ($prestataires as $prestataire): ?>
                     <a href="artisan.php?id=<?= $prestataire['id_prestataire'] ?>" class="prestataire-card-link">
                         <div class="prestataire-card">
-                            <img src="<?= htmlspecialchars(get_image_path($prestataire['photo'], 'prestataire')) ?>" alt="Service" class="service-image" />
+                            <img src="<?= htmlspecialchars(get_image_path($prestataire['cover_image'] ?? $prestataire['photo'], $prestataire['cover_image'] ? 'media' : 'prestataire')) ?>" alt="Service" class="service-image" />
                             <div class="card-content">
                                 <div class="profile-category">
                                     <img src="<?= htmlspecialchars(get_image_path($prestataire['photo'], 'prestataire')) ?>" alt="Profile" class="profile-photo" />

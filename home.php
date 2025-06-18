@@ -24,7 +24,13 @@ $sql = "SELECT p.id_prestataire, p.photo, p.tarif_journalier, p.ville, p.pays,
                (SELECT AVG(note) FROM Evaluation e WHERE e.id_prestataire = p.id_prestataire) AS avg_rating,
                (SELECT COUNT(*) FROM Evaluation e WHERE e.id_prestataire = p.id_prestataire) AS review_count,
                (SELECT description FROM Experience_prestataire ep WHERE ep.id_prestataire = p.id_prestataire ORDER BY date_project DESC LIMIT 1) AS latest_experience,
-               (SELECT CASE WHEN EXISTS (SELECT 1 FROM Devis d WHERE d.id_prestataire = p.id_prestataire AND d.date_fin_travaux >= CURDATE()) THEN 'unavailable' ELSE 'available' END) AS disponibilite_status
+               (SELECT CASE WHEN EXISTS (SELECT 1 FROM Devis d WHERE d.id_prestataire = p.id_prestataire AND d.date_fin_travaux >= CURDATE()) THEN 'unavailable' ELSE 'available' END) AS disponibilite_status,
+               (SELECT me.chemin_fichier
+                FROM Experience_prestataire ep_inner
+                JOIN Media_experience me ON ep_inner.id_experience = me.id_experience
+                WHERE ep_inner.id_prestataire = p.id_prestataire
+                ORDER BY ep_inner.date_project DESC, me.id_media ASC
+                LIMIT 1) AS cover_image
        FROM Prestataire p
        JOIN Utilisateur u ON p.id_utilisateur = u.id_utilisateur
        JOIN Categories c ON p.id_categorie = c.id_categorie
@@ -158,7 +164,7 @@ hero Title Exemple</h1>
         <p class="popular-title">Popular:</p>
         <div class="categories-list">
           <?php foreach ($popularCategories as $cat): ?>
-            <a href="search.php?category=<?= htmlspecialchars($cat['id_categorie']) ?>" class="category"><?= htmlspecialchars($cat['nom']) ?></a>
+            <a href="search.php?category=<?= htmlspecialchars($cat['id_categorie']) ?>" class="category"><span class="category-name"><?= htmlspecialchars($cat['nom']) ?></span></a>
           <?php endforeach; ?>
         </div>
       </div>
@@ -304,7 +310,7 @@ hero Title Exemple</h1>
   <?php foreach ($prestatairesHome as $artisan): ?>
 <a href="artisan.php?id=<?= $artisan['id_prestataire'] ?>" class="prestataire-card-link">
     <div class="prestataire-card">
-      <img src="<?= htmlspecialchars(get_image_path($artisan['photo'], 'prestataire')) ?>" alt="Service" class="service-image" />
+      <img src="<?= htmlspecialchars(get_image_path($artisan['cover_image'] ?? $artisan['photo'], $artisan['cover_image'] ? 'media' : 'prestataire')) ?>" alt="Service" class="service-image" />
       <div class="card-content">
         <div class="profile-category">
           <div class="profile-dropdown">

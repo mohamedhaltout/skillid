@@ -337,6 +337,7 @@ main h1 {
   gap: 28px; 
   padding: 60px 110px;
   overflow-x: auto; 
+
 }
 
 .category-card {
@@ -377,8 +378,8 @@ padding-left: 3px;
   letter-spacing: -1px;
   color: #3E185B;
   margin: 0;
-  text-decoration: none !important; /* Force remove underline */
 }
+
 
 .section-divider {
   width: 98%;

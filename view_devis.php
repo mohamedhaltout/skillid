@@ -115,9 +115,9 @@ if (!$devis_data) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Devis Details - Skilled</title>
-    <link rel="preconnect" href="https:
-    <link rel="preconnect" href="https:
-    <link href="https:
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="view_devis.css">
 </head>
 <body>
@@ -224,7 +224,7 @@ if (!$devis_data) {
                     </form>
                 <?php elseif ($devis_data['devis_statut'] === 'accepted'): ?>
                     <p class="status-message accepted">Devis Accepted</p>
-                    <button class="button pay-now-button" onclick="location.href='payment_page.php?id_devis=<?php echo htmlspecialchars($devis_data['id_devis']); ?>'">Pay Now</button>
+                    <button class="button pay-now-button" onclick="location.href='payment_page.php?id_devis=<?php echo htmlspecialchars($devis_data['id_devis']); ?>&amount=<?php echo htmlspecialchars($devis_data['acompte']); ?>'">Pay Acompte</button>
                 <?php elseif ($devis_data['devis_statut'] === 'edit_requested'): ?>
                     <p class="status-message edit-requested">Edit Requested</p>
                 <?php elseif ($devis_data['devis_statut'] === 'rejected'): ?>
@@ -241,10 +241,10 @@ if (!$devis_data) {
                     <button class="button create-new-devis-button" onclick="location.href='Create_quote.php?id_reservation=<?php echo htmlspecialchars($devis_data['id_reservation']); ?>'">Create New Devis</button>
                 <?php endif; ?>
             <?php endif; ?>
-            <div class="detail-group">
-                <span class="detail-label">Devis Status:</span>
-                <span class="detail-value status-<?php echo strtolower($devis_data['devis_statut']); ?>"><?php echo htmlspecialchars(ucfirst($devis_data['devis_statut'])); ?></span>
-            </div>
+        </div>
+        <div class="devis-status-container">
+            <span class="status-label">Devis Status:</span>
+            <span class="status-value status-<?php echo strtolower($devis_data['devis_statut']); ?>"><?php echo htmlspecialchars(ucfirst($devis_data['devis_statut'])); ?></span>
         </div>
     </main>
 </body>

@@ -3,17 +3,12 @@ require 'config.php';
 session_start(); // Start session here
 
 // Redirect if artisan tries to view another artisan's profile or if not logged in
-if (isset($_SESSION['role'])) {
-    if ($_SESSION['role'] === 'prestataire') {
-        // If an artisan is logged in, redirect them to their own dashboard
-        header("Location: artisan_dashboard.php");
-        exit();
-    }
-} else {
-    // If no role is set (not logged in), redirect to login page
-    header("Location: login.php");
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'prestataire') {
+    // If an artisan is logged in, redirect them to their own dashboard
+    header("Location: artisan_dashboard.php");
     exit();
 }
+// No redirection for non-logged-in users or clients, allowing them to view the artisan page.
 
 $artisan_profile_photo = get_image_path('', 'prestataire'); // Default profile photo
 
@@ -264,8 +259,8 @@ if ($total_reviews > 0) {
                     <p class="reservation-message"><?= htmlspecialchars($reservation_message) ?></p>
                 <?php endif; ?>
             <?php else: ?>
-                <!-- If not a client, or not logged in, the button should always be enabled to allow redirection to login/signup -->
-                <button class="request-service-action-btn" data-prestataire-id="<?= $id_prestataire ?>">Demande De Service</button>
+                <!-- If not a client, or not logged in, the button should trigger a login/signup prompt -->
+                <button class="request-service-action-btn" data-prestataire-id="<?= $id_prestataire ?>" data-requires-login="true">Demande De Service</button>
             <?php endif; ?>
 
         </section>
@@ -421,6 +416,10 @@ if ($total_reviews > 0) {
                 }
             }
         }
+    </script>
+    <script>
+        // Pass PHP session status to JavaScript
+        const isLoggedIn = <?= json_encode(isset($_SESSION['id_utilisateur'])) ?>;
     </script>
 </body>
 </html>
