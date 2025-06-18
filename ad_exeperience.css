@@ -206,7 +206,7 @@ body {
 }
 
 .media-upload-button {
-    width: 50px; 
+    width: 50px;
     height: 50px;
     border: 1px dashed #B4B4B4;
     border-radius: 8px;
@@ -219,7 +219,8 @@ body {
     position: relative;
     box-shadow: 0 4px 4px rgba(222, 222, 222, 0.25);
     transition: all 0.2s ease-in-out;
-    flex-shrink: 0; 
+    flex-shrink: 0;
+    text-decoration: none;
 }
 
 .media-upload-button:hover {
@@ -309,6 +310,7 @@ body {
     margin: 0 auto 30px;
     cursor: pointer;
     box-sizing: border-box;
+    text-decoration: none;
 }
 
 .alert-box {

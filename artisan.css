@@ -16,36 +16,38 @@ body {
 
 .header-search-container {
     position: relative;
-    margin-left: -140px;
+    margin-left: 0; /* Centering the search bar */
     width: 620px;
-    height: 44px;
+    height: 50px; /* Increased height */
     display: flex;
     align-items: center;
-    border: 0.7px solid #CECECE;
-    border-radius: 5px;
+    border: 1px solid #CECECE; /* Adjusted border thickness */
+    border-radius: 25px; /* More rounded corners */
     overflow: hidden;
     flex-shrink: 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Added subtle shadow */
 }
 
 .header-search-input {
     flex: 1;
     height: 100%;
     border: none;
-    padding: 0 12px;
-    font-size: 14.4px;
+    padding: 0 20px; /* Increased padding */
+    font-size: 16px; /* Increased font size */
     font-family: 'Open Sans', sans-serif;
-    color: #838383;
+    color: #62646A; /* Adjusted placeholder color */
     letter-spacing: -0.01em;
     outline: none;
 }
 
 .header-search-icon-wrapper {
-    width: 61px;
+    width: 70px; /* Increased width */
     height: 100%;
     background-color: #3E185B;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-radius: 0 25px 25px 0; /* Rounded right corners */
 }
 
 .header-search-icon {
@@ -169,7 +171,7 @@ body {
     padding-right: 15px;
 }
 
-.availability-sidebar {
+.request-service-section {
     flex: 0 0 35%;
     display: flex;
     flex-direction: column;
@@ -417,6 +419,133 @@ body {
     margin-bottom: 25px;
 }
 
+.reviews-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.review-item {
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.reviewer-name {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    color: #3E185B;
+}
+
+.review-rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.star-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.rating-score {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    color: #3E185B;
+}
+
+.review-comment {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    color: #62646A;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.review-date {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    color: #84659C;
+    text-align: right;
+    display: block;
+}
+
+.no-reviews-message {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    color: #84659C;
+    font-style: italic;
+    text-align: center;
+    padding: 20px;
+    border: 1px dashed #e0e0e0;
+    border-radius: 10px;
+}
+
+@media (max-width: 768px) {
+    .review-item {
+        padding: 15px;
+    }
+
+    .reviewer-name {
+        font-size: 16px;
+    }
+
+    .star-icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    .rating-score {
+        font-size: 14px;
+    }
+
+    .review-comment {
+        font-size: 14px;
+    }
+
+    .review-date {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .review-item {
+        padding: 10px;
+    }
+
+    .reviewer-name {
+        font-size: 14px;
+    }
+
+    .star-icon {
+        width: 14px;
+        height: 14px;
+    }
+
+    .rating-score {
+        font-size: 12px;
+    }
+
+    .review-comment {
+        font-size: 12px;
+    }
+
+    .review-date {
+        font-size: 10px;
+    }
+}
+
 .customer-review-card {
     border: 1px solid #B8B8B8;
     border-radius: 10px;
@@ -483,100 +612,62 @@ body {
     margin-top: 8px;
 }
 
-.calendar-section-title {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: bold;
-    font-size: 28px;
-    letter-spacing: -1%;
-    color: #3E185B;
-    margin-bottom: 20px;
-}
 
-.service-calendar-widget {
-    width: 100%;
-    max-width: 450px;
-    height: 600px;
-    border: 1px solid #BEBEBE;
-    border-radius: 20px;
-    padding: 20px;
-    box-sizing: border-box;
+
+
+
+
+
+
+
+
+
+
+
+
+.availability-sidebar {
+    flex: 0 0 35%;
     display: flex;
     flex-direction: column;
-    font-family: 'Open Sans', sans-serif;
-}
-
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 15px;
-    font-size: 20px;
-    font-weight: bold;
-    color: #3E185B;
+    gap: 15px;
+    padding-left: 15px;
 }
 
-.calendar-nav-arrow {
-    cursor: pointer;
-    padding: 5px 10px;
-}
-
-.calendar-month-year {
-    text-align: center;
-}
-
-.calendar-days-of-week {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    text-align: center;
-    font-weight: 600;
-    color: #84659C;
-    margin-bottom: 10px;
-}
-
-.calendar-days-of-week span {
-    padding: 8px 0;
-}
-
-.calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-    flex-grow: 1;
-}
-
-.calendar-date {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.availability-info {
     width: 100%;
-    height: 45px;
-    aspect-ratio: 1 / 1;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 500;
+    max-width: 450px;
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.availability-info h3 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: bold;
+    font-size: 20px;
     color: #3E185B;
-    transition: background-color 0.2s, color 0.2s;
+    margin-top: 0;
+    margin-bottom: 15px;
 }
 
-.calendar-date:hover {
-    background-color: #E6E6FA;
+.availability-date {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 18px;
+    color: #3E185B;
+    font-weight: 600;
+    margin: 0;
 }
 
-.calendar-date.inactive {
-    color: #B8B8B8;
-    cursor: default;
-    background-color: transparent;
-}
-
-.calendar-date.inactive:hover {
-    background-color: transparent;
-}
-
-.calendar-date.reserved {
-    color: #fff;
-    background-color: #84659C;
-    cursor: not-allowed;
-    pointer-events: none;
+.no-availability {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    color: #84659C;
+    font-style: italic;
 }
 
 .request-service-action-btn {
@@ -597,6 +688,11 @@ body {
 
 .request-service-action-btn:hover {
     background-color: #5d287a;
+}
+
+.request-service-action-btn:disabled {
+   background-color: #a0a0a0; /* Lighter grey for disabled state */
+   cursor: not-allowed;
 }
 
 .footer {
@@ -739,7 +835,7 @@ body {
         padding-right: 10px;
     }
 
-    .availability-sidebar {
+    .request-service-section {
         flex: 0 0 40%;
         padding-left: 10px;
     }
@@ -763,7 +859,6 @@ body {
     }
 
     .artisan-service-category,
-    .calendar-section-title,
     .reviews-section-title {
         font-size: 24px;
     }
@@ -787,11 +882,6 @@ body {
         width: calc((150px * 5) + (10px * 4));
     }
 
-    .service-calendar-widget {
-        max-width: 100%;
-        height: 550px;
-        padding: 15px;
-    }
 
     .request-service-action-btn {
         max-width: 100%;
@@ -844,7 +934,7 @@ body {
     }
 
     .profile-info-section,
-    .availability-sidebar {
+    .request-service-section {
         flex: none;
         width: 100%;
         padding: 0;
@@ -993,7 +1083,6 @@ body {
     }
 
     .artisan-service-category,
-    .calendar-section-title,
     .reviews-section-title {
         font-size: 22px;
         margin-top: 20px;
@@ -1024,25 +1113,9 @@ body {
         gap: 10px;
     }
 
-    .service-calendar-widget {
-        padding: 10px;
-        height: auto;
-    }
 
-    .calendar-header {
-        font-size: 18px;
-        margin-bottom: 10px;
-    }
 
-    .calendar-days-of-week span {
-        font-size: 14px;
-        padding: 5px 0;
-    }
 
-    .calendar-date {
-        height: 35px;
-        font-size: 14px;
-    }
 
     .request-service-action-btn {
         height: 50px;
@@ -1117,7 +1190,6 @@ body {
     }
 
     .artisan-service-category,
-    .calendar-section-title,
     .reviews-section-title {
         font-size: 20px;
     }
@@ -1140,10 +1212,6 @@ body {
         width: calc((100px * 2) + (10px * 1));
     }
 
-    .calendar-date {
-        height: 30px;
-        font-size: 12px;
-    }
 
     .request-service-action-btn {
         height: 45px;
@@ -1158,4 +1226,36 @@ body {
     .language-selector span {
         font-size: 12px;
     }
+}
+/* Lightbox Styles */
+#lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-in-out;
+}
+
+#lightbox.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#lightbox img {
+    max-width: 70%; /* Reduced size for a "medium" pop-up */
+    max-height: 70%; /* Reduced size for a "medium" pop-up */
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    background-color: #fff; /* Add a background to the image itself to make it look like a window content */
+    padding: 20px; /* Add some padding around the image within the "window" */
+    box-sizing: border-box;
 }

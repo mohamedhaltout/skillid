@@ -115,6 +115,7 @@ body {
     font-family: 'Open Sans', sans-serif;
     font-weight: bold;
     cursor: pointer;
+    text-decoration: none;
   }
   
   .signup-link {

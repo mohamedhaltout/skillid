@@ -1,7 +1,6 @@
 body {
     margin: 0;
     font-family: 'Open Sans', sans-serif;
-    display: flex;
     height: 100vh;
     overflow-x: hidden;
 }
