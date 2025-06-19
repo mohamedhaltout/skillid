@@ -316,6 +316,72 @@ body {
     margin-bottom: 30px;
 }
 
+.other-experiences-section {
+    margin-top: 50px;
+    margin-bottom: 30px;
+}
+
+.other-experiences-title {
+    font-family: 'Open Sans', sans-serif;
+    font-weight: bold;
+    font-size: 28px;
+    letter-spacing: -1%;
+    color: #3E185B;
+    margin-bottom: 25px;
+}
+
+.other-experiences-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: flex-start;
+}
+
+.mini-experience-card {
+    width: 280px; /* Adjust as needed */
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease-in-out;
+}
+
+.mini-experience-card:hover {
+    transform: translateY(-5px);
+}
+
+.mini-experience-thumbnail {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+}
+
+.mini-experience-details {
+    padding: 15px;
+}
+
+.mini-experience-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 18px;
+    color: #3E185B;
+    margin-top: 0;
+    margin-bottom: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mini-experience-description {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    color: #62646A;
+    line-height: 1.4;
+    margin: 0;
+}
+
 .main-media-viewer {
     position: relative;
     width: 100%;
@@ -1227,6 +1293,30 @@ body {
         font-size: 12px;
     }
 }
+.view-all-experiences-button-container {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+.view-all-experiences-button {
+    display: inline-block;
+    background-color: #3E185B; /* A purple color for "view all" action */
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    text-decoration: none; /* Remove underline from link */
+    transition: background-color 0.3s ease;
+    font-weight: 600;
+}
+
+.view-all-experiences-button:hover {
+    background-color: #5d287a; /* Darker purple on hover */
+}
+
 /* Lightbox Styles */
 #lightbox {
     position: fixed;

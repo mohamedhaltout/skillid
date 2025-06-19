@@ -506,6 +506,10 @@ body {
     .detail-label {
         font-size: 11.2px;
     }
+    
+    .payment-history-section {
+        margin-top: 35px; /* Add some space above the section */
+    }
 
     .detail-value {
         font-size: 9.8px;

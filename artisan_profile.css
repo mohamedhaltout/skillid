@@ -232,3 +232,25 @@ button[type="submit"]:hover {
         margin-top: 10px;
     }
 }
+
+.add-experience-button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.add-experience-button {
+    display: inline-block;
+    background-color: #5cb85c; /* A green color for "add" action */
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    text-decoration: none; /* Remove underline from link */
+    transition: background-color 0.3s ease;
+}
+
+.add-experience-button:hover {
+    background-color: #4cae4c; /* Darker green on hover */
+}

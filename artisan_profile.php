@@ -203,6 +203,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <button type="submit">Update Profile</button>
         </form>
+        <div class="add-experience-button-container">
+            <a href="ad_exeperience.php" class="add-experience-button">Add New Experience</a>
+        </div>
     </div>
 
     <script>

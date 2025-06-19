@@ -204,6 +204,10 @@ if ($total_reviews > 0) {
                 </div>
             </div>
 
+            <div class="view-all-experiences-button-container">
+                <a href="experiences.php?id=<?= htmlspecialchars($id_prestataire) ?>" class="view-all-experiences-button">View All Experiences</a>
+            </div>
+
             <section class="customer-reviews-section">
                 <h3 class="reviews-section-title">Reviews</h3>
                 <div class="reviews-list">
