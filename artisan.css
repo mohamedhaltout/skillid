@@ -691,50 +691,10 @@ body {
 
 
 
-.availability-sidebar {
-    flex: 0 0 35%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-    padding-left: 15px;
-}
 
-.availability-info {
-    width: 100%;
-    max-width: 450px;
-    background-color: #f9f9f9;
-    border: 1px solid #e0e0e0;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    margin-bottom: 20px;
-    text-align: center;
-}
 
-.availability-info h3 {
-    font-family: 'Poppins', sans-serif;
-    font-weight: bold;
-    font-size: 20px;
-    color: #3E185B;
-    margin-top: 0;
-    margin-bottom: 15px;
-}
 
-.availability-date {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 18px;
-    color: #3E185B;
-    font-weight: 600;
-    margin: 0;
-}
 
-.no-availability {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 16px;
-    color: #84659C;
-    font-style: italic;
-}
 
 .request-service-action-btn {
     width: 100%;

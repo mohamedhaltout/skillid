@@ -70,18 +70,6 @@ while ($row = $result->fetch_assoc()) {
 $stmt->close();
 error_log("Accepted Requests: " . print_r($accepted_requests, true));
 
-// Check if the artisan has an ongoing project
-$is_artisan_busy = false;
-$current_date = date('Y-m-d');
-$stmt = $conn->prepare("SELECT COUNT(*) AS active_projects_count FROM Devis d JOIN Reservation r ON d.id_reservation = r.id_reservation WHERE r.id_prestataire = ? AND d.date_fin_travaux >= ?");
-$stmt->bind_param("is", $artisan_id, $current_date);
-$stmt->execute();
-$result = $stmt->get_result();
-$active_projects = $result->fetch_assoc();
-if ($active_projects['active_projects_count'] > 0) {
-    $is_artisan_busy = true;
-}
-$stmt->close();
 
 // Fetch refused requests
 $refused_requests = [];
@@ -317,7 +305,7 @@ $stmt->close();
                             <div class="demande-actions">
                                 <button class="button view-request-button" onclick="location.href='demande_service.php?id=<?php echo $demande['id_reservation']; ?>&mode=view'">Voir la demande</button>
                                 <button class="button refuse-button" data-id="<?php echo $demande['id_reservation']; ?>">Refuser</button>
-                                <button class="button accept-button" data-id="<?php echo $demande['id_reservation']; ?>" <?php echo $is_artisan_busy ? 'style="display:none;"' : ''; ?>>Accepter</button>
+                                <button class="button accept-button" data-id="<?php echo $demande['id_reservation']; ?>">Accepter</button>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -668,12 +656,7 @@ $stmt->close();
                 });
             });
 
-            const canAcceptNewRequests = <?php echo json_encode(!$is_artisan_busy); ?>;
-
             acceptButtons.forEach(button => {
-                if (!canAcceptNewRequests) {
-                    button.style.display = 'none'; // Hide the accept button if artisan cannot accept new requests
-                }
                 button.addEventListener('click', function(event) {
                     event.preventDefault();
 

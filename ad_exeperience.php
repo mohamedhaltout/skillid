@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 require 'config.php';
 session_start();
 
@@ -40,8 +42,17 @@ if (isset($_GET['edit_id'])) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    echo "<p style='color: blue;'>Debug: POST request received.</p>";
+    echo "<pre style='background-color: #f0f0f0; padding: 10px; border: 1px solid #ccc;'>";
+    echo "<h3>Debug: \$_POST Content:</h3>";
+    print_r($_POST);
+    echo "<h3>Debug: \$_FILES Content:</h3>";
+    print_r($_FILES);
+    echo "</pre>";
+
     // Handle single experience edit submission
     if (isset($_POST['id_experience'])) {
+        echo "<p style='color: blue;'>Debug: Handling single experience edit submission.</p>";
         $titre = $_POST['experiences'][0]['titre_experience'] ?? ''; // Assuming edit mode uses index 0
         $description = $_POST['experiences'][0]['description'] ?? '';
         $annee = $_POST['experiences'][0]['date_project'] ?? '';
@@ -95,16 +106,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
                 $pdo->commit();
-                header("Location: artisan.php?id=" . $id_prestataire);
-                exit;
+                echo "<p style='color: green;'>Debug: Transaction committed successfully for experience update.</p>";
+                // header("Location: artisan.php?id=" . $id_prestataire); // Temporarily commented out for debugging
+                // exit; // Temporarily commented out for debugging
             } catch (PDOException $e) {
                 $pdo->rollBack();
                 $message = "Error updating experience: " . $e->getMessage();
+                echo "<p style='color: red;'>Debug: PDO Exception: " . htmlspecialchars($e->getMessage()) . "</p>";
+            } catch (Exception $e) {
+                $pdo->rollBack();
+                $message = "An unexpected error occurred: " . $e->getMessage();
+                echo "<p style='color: red;'>Debug: General Exception: " . htmlspecialchars($e->getMessage()) . "</p>";
             }
         }
     }
     // Handle multiple new experiences submission
     else if (isset($_POST['experiences']) && is_array($_POST['experiences'])) {
+        echo "<p style='color: blue;'>Debug: Handling multiple new experiences submission.</p>";
         $all_experiences_added = true;
         foreach ($_POST['experiences'] as $index => $experience) {
             $titre = $experience['titre_experience'] ?? '';
@@ -145,9 +163,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
                 $pdo->commit();
+                echo "<p style='color: green;'>Debug: Transaction committed successfully for new experience (ID: " . $id_experience . ").</p>";
             } catch (PDOException $e) {
                 $pdo->rollBack();
                 $message = "Error adding experience: " . $e->getMessage();
+                echo "<p style='color: red;'>Debug: PDO Exception: " . htmlspecialchars($e->getMessage()) . "</p>";
+                $all_experiences_added = false;
+                break;
+            } catch (Exception $e) {
+                $pdo->rollBack();
+                $message = "An unexpected error occurred: " . $e->getMessage();
+                echo "<p style='color: red;'>Debug: General Exception: " . htmlspecialchars($e->getMessage()) . "</p>";
                 $all_experiences_added = false;
                 break;
             }
@@ -155,8 +181,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($all_experiences_added) {
             $message = "All experiences added successfully!";
+            echo "<p style='color: green;'>Debug: All experiences added successfully. Redirecting...</p>";
             header("Location: artisan.php?id=" . $id_prestataire);
             exit;
+        } else {
+            echo "<p style='color: red;'>Debug: Not all experiences were added successfully. Check previous error messages.</p>";
         }
     }
 }

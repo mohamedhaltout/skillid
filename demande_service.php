@@ -63,41 +63,8 @@ if ($is_view_mode) {
             $message = "Artisan not found.";
             $message_type = 'error';
         } else {
-            // Check if the artisan has an active reservation
-            $has_active_reservation_general = false;
-            $stmt_active_reservation = $pdo->prepare("SELECT COUNT(*) FROM Reservation WHERE id_prestataire = ? AND statut IN ('accepted', 'in_progress')");
-            $stmt_active_reservation->execute([$id_prestataire]);
-            if ($stmt_active_reservation->fetchColumn() > 0) {
-                $has_active_reservation_general = true;
-            }
-
-            // NEW: Check if a quote (Devis) exists for this specific client and artisan, and the project is not completed/cancelled/rejected
-            $has_quote_for_this_client = false;
-            $stmt_quote_check = $pdo->prepare("
-                SELECT COUNT(*)
-                FROM Devis d
-                JOIN Reservation r ON d.id_reservation = r.id_reservation
-                WHERE d.id_prestataire = ?
-                AND r.id_client = ?
-                AND r.statut NOT IN ('completed', 'cancelled', 'rejected')
-            ");
-            $stmt_quote_check->execute([$id_prestataire, $id_client]);
-            if ($stmt_quote_check->fetchColumn() > 0) {
-                $has_quote_for_this_client = true;
-            }
-
             // Determine the final message and disable state
             $disable_submit_button = false;
-
-            if ($has_quote_for_this_client) {
-                $message = "You already have an active quote or ongoing project with this artisan. Please complete it before submitting a new request.";
-                $message_type = 'error';
-                $disable_submit_button = true;
-            } elseif ($has_active_reservation_general) {
-                $message = "This artisan is currently reserved and cannot accept new requests.";
-                $message_type = 'error';
-                $disable_submit_button = true;
-            }
         }
     }
 

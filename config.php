@@ -4,6 +4,9 @@ $username = "root"; // Default XAMPP username
 $password = "";     // Default XAMPP password
 $dbname = "Skilled"; // Corrected database name as per user feedback
 
+// Set the default timezone to Africa/Casablanca
+date_default_timezone_set('Africa/Casablanca');
+
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 

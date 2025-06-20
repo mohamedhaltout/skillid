@@ -19,50 +19,8 @@ if (!isset($_GET['id'])) {
 $id_prestataire = (int) $_GET['id'];
 
 // Check if the artisan has an active reservation
-$has_active_reservation_general = false;
-$stmt_active_reservation = $pdo->prepare("SELECT COUNT(*) FROM Reservation WHERE id_prestataire = ? AND statut IN ('accepted', 'in_progress')");
-$stmt_active_reservation->execute([$id_prestataire]);
-if ($stmt_active_reservation->fetchColumn() > 0) {
-    $has_active_reservation_general = true;
-}
-
-$disable_demande_button = false;
-$reservation_message = '';
-
-if (isset($_SESSION['id_utilisateur']) && isset($_SESSION['role']) && $_SESSION['role'] === 'client') {
-    $id_client = $_SESSION['id_utilisateur']; // Assuming id_utilisateur for client is id_client
-
-    // Check if a quote (Devis) exists for this specific client and artisan, and the project is not completed/cancelled/rejected
-    $has_quote_for_this_client = false;
-    $stmt_quote_check = $pdo->prepare("
-        SELECT COUNT(*)
-        FROM Devis d
-        JOIN Reservation r ON d.id_reservation = r.id_reservation
-        WHERE d.id_prestataire = ?
-        AND r.id_client = ?
-        AND r.statut NOT IN ('completed', 'cancelled', 'rejected')
-    ");
-    $stmt_quote_check->execute([$id_prestataire, $id_client]);
-    if ($stmt_quote_check->fetchColumn() > 0) {
-        $has_quote_for_this_client = true;
-    }
-
-    if ($has_active_reservation_general) {
-        $reservation_message = "This artisan is currently reserved and cannot accept new requests.";
-        $disable_demande_button = true;
-    } elseif ($has_quote_for_this_client) {
-        $reservation_message = "You already have an active quote or ongoing project with this artisan. Please complete it before submitting a new request.";
-        $disable_demande_button = true;
-    } else {
-        $disable_demande_button = false;
-    }
-} else {
-    // If not a client or not logged in, the button should not be disabled by reservation status
-    // but might be disabled for other reasons (e.g., if the user is an artisan viewing another artisan's profile)
-    // For now, we'll only disable if a client is logged in and there's a conflict.
-    // If the user is not a client, the button should always be enabled for them to click and be redirected to login/signup.
-    $disable_demande_button = false; // Default to not disabled if not a client
-}
+$disable_demande_button = false; // Default to not disabled as artisans can accept multiple requests
+$reservation_message = ''; // No reservation message needed
 
 $stmt = $pdo->query("SELECT nom, icone FROM Categories WHERE type = 'standard'");
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -237,37 +195,13 @@ if ($total_reviews > 0) {
                 </div>
             </section>
         </section>
-
-        <section class="availability-sidebar">
-            <div class="availability-info">
-                <h3>Available From:</h3>
-                <?php
-                $stmt_devis_availability = $pdo->prepare("SELECT MAX(date_fin_travaux) AS latest_end_date FROM Devis WHERE id_prestataire = ?");
-                $stmt_devis_availability->execute([$id_prestataire]);
-                $latest_end_date_data = $stmt_devis_availability->fetch(PDO::FETCH_ASSOC);
-                $latest_end_date = $latest_end_date_data['latest_end_date'];
-
-                if ($latest_end_date) {
-                    // Calculate the next day after the latest project end date
-                    $available_from_date = date('F j, Y', strtotime($latest_end_date . ' +1 day'));
-                    echo '<p class="availability-date">Available from: ' . htmlspecialchars($available_from_date) . '</p>';
-                } else {
-                    echo '<p class="no-availability">Currently available for new projects.</p>';
-                }
-                ?>
-            </div>
-
-            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'client'): ?>
-                <button class="request-service-action-btn" data-prestataire-id="<?= $id_prestataire ?>" <?= $disable_demande_button ? 'disabled' : '' ?>>Demande De Service</button>
-                <?php if ($disable_demande_button): ?>
-                    <p class="reservation-message"><?= htmlspecialchars($reservation_message) ?></p>
-                <?php endif; ?>
+<?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'client'): ?>
+                <button class="request-service-action-btn" data-prestataire-id="<?= $id_prestataire ?>">Demande De Service</button>
             <?php else: ?>
                 <!-- If not a client, or not logged in, the button should trigger a login/signup prompt -->
                 <button class="request-service-action-btn" data-prestataire-id="<?= $id_prestataire ?>" data-requires-login="true">Demande De Service</button>
             <?php endif; ?>
 
-        </section>
     </main>
 
 

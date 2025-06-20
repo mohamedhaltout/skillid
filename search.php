@@ -25,14 +25,12 @@ $city_filter = $_GET['city'] ?? '';
 $price_min = $_GET['price_min'] ?? '';
 $price_max = $_GET['price_max'] ?? '';
 $availability_filter = $_GET['availability'] ?? '';
-$rating_filter = $_GET['rating'] ?? '';
 
 $sql = "SELECT p.id_prestataire, p.photo, p.tarif_journalier, p.ville, p.pays,
                u.nom AS user_nom, u.prenom AS user_prenom, c.nom AS categorie_nom,
                (SELECT AVG(note) FROM Evaluation e WHERE e.id_prestataire = p.id_prestataire) AS avg_rating,
                (SELECT COUNT(*) FROM Evaluation e WHERE e.id_prestataire = p.id_prestataire) AS review_count,
                (SELECT description FROM Experience_prestataire ep WHERE ep.id_prestataire = p.id_prestataire ORDER BY date_project DESC LIMIT 1) AS latest_experience,
-               (SELECT CASE WHEN EXISTS (SELECT 1 FROM Devis d WHERE d.id_prestataire = p.id_prestataire AND d.date_fin_travaux >= CURDATE()) THEN 'unavailable' ELSE 'available' END) AS disponibilite_status,
                (SELECT me.chemin_fichier
                 FROM Experience_prestataire ep_inner
                 JOIN Media_experience me ON ep_inner.id_experience = me.id_experience
@@ -73,6 +71,10 @@ if ($price_max !== '' && is_numeric($price_max)) {
     $sql .= " AND p.tarif_journalier <= ?";
     $params[] = $price_max;
 }
+if ($rating_filter && in_array($rating_filter, ['3', '4', '5'])) {
+    $sql .= " AND (SELECT AVG(note) FROM Evaluation e WHERE e.id_prestataire = p.id_prestataire) >= ?";
+    $params[] = $rating_filter;
+}
 if ($availability_filter) {
     $days = match ($availability_filter) {
         '2' => 2,
@@ -85,10 +87,6 @@ if ($availability_filter) {
         $sql .= " AND NOT EXISTS (SELECT 1 FROM Devis d WHERE d.id_prestataire = p.id_prestataire AND d.date_debut_travaux <= ?)";
         $params[] = $date_limit;
     }
-}
-if ($rating_filter && in_array($rating_filter, ['3', '4', '5'])) {
-    $sql .= " AND (SELECT AVG(note) FROM Evaluation e WHERE e.id_prestataire = p.id_prestataire) >= ?";
-    $params[] = $rating_filter;
 }
 
 $stmt = $pdo->prepare($sql);
@@ -239,6 +237,17 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
                     <?php endif; ?>
                 </select>
             </div>
+<div class="filter-card">
+                <img src="img/calendar.svg" alt="Availability Icon" class="filter-icon" />
+                <span class="filter-title">Availability</span>
+                <img src="img/down_arrow.svg" alt="Dropdown Arrow" class="filter-arrow" />
+                <select name="availability" class="filter-select" onchange="this.form.submit()" form="filterForm">
+                    <option value="">Any Time</option>
+                    <option value="2" <?= $availability_filter == '2' ? 'selected' : '' ?>>Within 2 Days</option>
+                    <option value="7" <?= $availability_filter == '7' ? 'selected' : '' ?>>Within 7 Days</option>
+                    <option value="15" <?= $availability_filter == '15' ? 'selected' : '' ?>>Within 15 Days</option>
+                </select>
+            </div>
 
             <div class="filter-card">
                 <img src="img/price.svg" alt="Price Icon" class="filter-icon" />
@@ -252,29 +261,6 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
                 </div>
             </div>
 
-            <div class="filter-card">
-                <img src="img/calendar.svg" alt="Availability Icon" class="filter-icon" />
-                <span class="filter-title">Availability</span>
-                <img src="img/down_arrow.svg" alt="Dropdown Arrow" class="filter-arrow" />
-                <select name="availability" onchange="this.form.submit()" form="filterForm">
-                    <option value="">Any Time</option>
-                    <option value="2" <?= $availability_filter == '2' ? 'selected' : '' ?>>Within 2 Days</option>
-                    <option value="7" <?= $availability_filter == '7' ? 'selected' : '' ?>>Within 7 Days</option>
-                    <option value="15" <?= $availability_filter == '15' ? 'selected' : '' ?>>Within 15 Days</option>
-                </select>
-            </div>
-
-            <div class="filter-card">
-                <img src="img/rating.svg" alt="Rating Icon" class="filter-icon" />
-                <span class="filter-title">Rating</span>
-                <img src="img/down_arrow.svg" alt="Dropdown Arrow" class="filter-arrow" />
-                <select name="rating" onchange="this.form.submit()" form="filterForm">
-                    <option value="">All Ratings</option>
-                    <option value="5" <?= $rating_filter == '5' ? 'selected' : '' ?>>5 Stars</option>
-                    <option value="4" <?= $rating_filter == '4' ? 'selected' : '' ?>>4 Stars & Up</option>
-                    <option value="3" <?= $rating_filter == '3' ? 'selected' : '' ?>>3 Stars & Up</option>
-                </select>
-            </div>
         </div>
 
         <form id="filterForm" method="GET" style="display: none;">
@@ -306,14 +292,9 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
                                     <span class="total-reviews">(<?= $prestataire['review_count'] ?? 0 ?>)</span>
                                 </div>
                                 <div class="price-section"><?= htmlspecialchars($prestataire['tarif_journalier']) ?> DH/day</div>
-                                <div class="location-availability">
-                                    <div class="location">
+                                <div class="location">
                                         <img src="img/location_icon.svg" alt="Location" class="location-icon" />
                                         <span class="location-text"><?= htmlspecialchars($prestataire['ville'] . ', ' . $prestataire['pays']) ?></span>
-                                    </div>
-                                    <div class="availability <?= strtolower($prestataire['disponibilite_status']) == 'available' ? 'available' : 'unavailable' ?>">
-                                        <img src="img/<?= strtolower($prestataire['disponibilite_status']) == 'available' ? 'avalaibility.svg' : 'univailible.png' ?>" alt="Availability" class="availability-icon" />
-                                        <span class="availability-text"><?= ucfirst($prestataire['disponibilite_status']) ?></span>
                                     </div>
                                 </div>
                             </div>
@@ -364,7 +345,7 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
                     <li>Community Hub</li>
                     <li>Forum</li>
                     <li>Events</li>
-                </ul>
+                    </ul>
             </div>
             <div class="footer-column">
                 <h3 class="footer-title">Company</h3>

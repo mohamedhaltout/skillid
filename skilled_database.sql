@@ -41,13 +41,6 @@ CREATE TABLE Prestataire (
     FOREIGN KEY (id_categorie) REFERENCES Categories(id_categorie)
 );
 
--- DISPONIBILITE PAR DATE (recommandé pour le calendrier)
-CREATE TABLE Disponibilite (
-    id_disponibilite INT AUTO_INCREMENT PRIMARY KEY,
-    id_prestataire INT NOT NULL,
-    date_disponible DATE NOT NULL,
-    FOREIGN KEY (id_prestataire) REFERENCES Prestataire(id_prestataire)
-);
 
 -- EXPERIENCES
 CREATE TABLE Experience_prestataire (
@@ -107,7 +100,8 @@ CREATE TABLE Devis (
     client_confirmation_deadline DATETIME,
     artisan_confirmation_deadline DATETIME,
     FOREIGN KEY (id_reservation) REFERENCES Reservation(id_reservation),
-    FOREIGN KEY (id_prestataire) REFERENCES Prestataire(id_prestataire)
+    FOREIGN KEY (id_prestataire) REFERENCES Prestataire(id_prestataire),
+    UNIQUE (id_reservation)
 );
 
 -- EVALUATION

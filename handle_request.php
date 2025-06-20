@@ -14,9 +14,11 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
 
     if ($action == 'accept') {
         $status = 'accepted';
+    } elseif ($action == 'refuse') {
+        $status = 'refused';
     } else {
         // Invalid action
-        header("Location: artisan_dashboard.php");
+        echo json_encode(['status' => 'error', 'message' => 'Invalid action.']);
         exit();
     }
 
@@ -39,6 +41,8 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
             $stmt_fetch->close();
 
             echo json_encode(['status' => 'success', 'message' => 'Request accepted successfully.', 'demande' => $accepted_demande_details]);
+        } elseif ($action == 'refuse') {
+            echo json_encode(['status' => 'success', 'message' => 'Request refused successfully.']);
         }
     } else {
         echo json_encode(['status' => 'error', 'message' => 'Failed to ' . $action . ' request.']);

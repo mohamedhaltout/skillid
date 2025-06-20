@@ -24,7 +24,6 @@ $sql = "SELECT p.id_prestataire, p.photo, p.tarif_journalier, p.ville, p.pays,
                (SELECT AVG(note) FROM Evaluation e WHERE e.id_prestataire = p.id_prestataire) AS avg_rating,
                (SELECT COUNT(*) FROM Evaluation e WHERE e.id_prestataire = p.id_prestataire) AS review_count,
                (SELECT description FROM Experience_prestataire ep WHERE ep.id_prestataire = p.id_prestataire ORDER BY date_project DESC LIMIT 1) AS latest_experience,
-               (SELECT CASE WHEN EXISTS (SELECT 1 FROM Devis d WHERE d.id_prestataire = p.id_prestataire AND d.date_fin_travaux >= CURDATE()) THEN 'unavailable' ELSE 'available' END) AS disponibilite_status,
                (SELECT me.chemin_fichier
                 FROM Experience_prestataire ep_inner
                 JOIN Media_experience me ON ep_inner.id_experience = me.id_experience
@@ -64,6 +63,19 @@ if ($price_min !== '' && is_numeric($price_min)) {
 if ($price_max !== '' && is_numeric($price_max)) {
     $sql .= " AND p.tarif_journalier <= ?";
     $params[] = $price_max;
+if ($availability_filter) {
+    $days = match ($availability_filter) {
+        '2' => 2,
+        '7' => 7,
+        '15' => 15,
+        default => null
+    };
+    if ($days) {
+        $date_limit = date('Y-m-d', strtotime("+$days days"));
+        $sql .= " AND NOT EXISTS (SELECT 1 FROM Devis d WHERE d.id_prestataire = p.id_prestataire AND d.date_debut_travaux <= ?)";
+        $params[] = $date_limit;
+    }
+}
 }
 if ($availability_filter) {
     $days = match ($availability_filter) {
@@ -263,6 +275,17 @@ hero Title Exemple</h1>
         <?php endif; ?>
       </select>
     </div>
+<div class="filter-card">
+      <img src="img/calendar.svg" alt="Availability Icon" class="filter-icon" />
+      <span class="filter-title">Availability</span>
+      <img src="img/down_arrow.svg" alt="Dropdown Arrow" class="filter-arrow" />
+      <select name="availability" class="filter-select" onchange="this.form.submit()" form="filterForm">
+        <option value="">Any Time</option>
+        <option value="2" <?= $availability_filter == '2' ? 'selected' : '' ?>>Within 2 Days</option>
+        <option value="7" <?= $availability_filter == '7' ? 'selected' : '' ?>>Within 7 Days</option>
+        <option value="15" <?= $availability_filter == '15' ? 'selected' : '' ?>>Within 15 Days</option>
+      </select>
+    </div>
 
     <div class="filter-card">
       <img src="img/price.svg" alt="Price Icon" class="filter-icon" />
@@ -276,17 +299,6 @@ hero Title Exemple</h1>
       </div>
     </div>
 
-    <div class="filter-card">
-      <img src="img/calendar.svg" alt="Availability Icon" class="filter-icon" />
-      <span class="filter-title">Availability</span>
-      <img src="img/down_arrow.svg" alt="Dropdown Arrow" class="filter-arrow" />
-      <select name="availability" class="filter-select" onchange="this.form.submit()" form="filterForm">
-        <option value="">Any Time</option>
-        <option value="2" <?= $availability_filter == '2' ? 'selected' : '' ?>>Within 2 Days</option>
-        <option value="7" <?= $availability_filter == '7' ? 'selected' : '' ?>>Within 7 Days</option>
-        <option value="15" <?= $availability_filter == '15' ? 'selected' : '' ?>>Within 15 Days</option>
-      </select>
-    </div>
 
     <div class="filter-card">
       <img src="img/rating.svg" alt="Rating Icon" class="filter-icon" />
@@ -347,10 +359,6 @@ hero Title Exemple</h1>
             <img src="img/location_icon.svg" alt="Location" class="location-icon" />
             <span class="location-text"><?= htmlspecialchars($artisan['ville']) ?>, <?= htmlspecialchars($artisan['pays']) ?></span>
           </div>
-          <div class="availability <?= strtolower($artisan['disponibilite_status']) === 'available' ? 'available' : 'unavailable' ?>">
-  <img src="img/<?= strtolower($artisan['disponibilite_status']) === 'available' ? 'avalaibility.svg' : 'univailible.png' ?>" alt="Availability" class="availability-icon" />
-  <span class="availability-text"><?= ucfirst($artisan['disponibilite_status']) ?></span>
-</div>
 
         </div>
       </div>
