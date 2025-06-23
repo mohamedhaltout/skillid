@@ -340,9 +340,23 @@ main h1 {
 
 }
 
+.category-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.category-card-link .category-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #3E185B; 
+  text-decoration: none;
+}
+
+
 .category-card {
-  width: 110px;
-  height: 110px;
+  width: 140px;  /* ⬅️ زدت العرض */
+  height: 130px; /* ⬅️ زدت الطول */
   background-color: white;
   border-radius: 16px;
   box-shadow: 0 0 4.9px 1.5px rgba(32, 32, 32, 0.15);
@@ -354,10 +368,12 @@ main h1 {
   transition: box-shadow 0.3s ease;
   flex-shrink: 0;
   text-decoration: none;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .category-card a {
- text-decoration: none;
+  text-decoration: none;
 }
 
 .category-icon {
@@ -372,13 +388,22 @@ main h1 {
 .category-text {
   font-family: 'Open Sans', sans-serif;
   font-weight: 600;
-padding-left: 3px;
   font-size: 15px;
   line-height: 143%;
   letter-spacing: -1px;
   color: #3E185B;
   margin: 0;
+  padding-left: 3px;
+  text-decoration: none;
+
+  display: -webkit-box;
+  -webkit-line-clamp: 2;     
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  height: calc(1.4em * 2);    
 }
+
 
 
 .section-divider {
@@ -409,6 +434,20 @@ padding-left: 3px;
   flex-wrap: wrap;
   gap: 25px;
 }
+
+.urgent-card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.urgent-card-link .urgent-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  color: #3E185B;  /* ولا اللون اللي تستعمل في باقي النصوص */
+  text-decoration: none;
+}
+
 
 .urgent-card {
   display: flex;
@@ -513,25 +552,28 @@ padding-left: 3px;
 .cards-container {
   display: flex;
   flex-wrap: wrap;       
-  gap: 20px;             
-  justify-content: flex-start; 
+  justify-content: space-between; 
 }
 
 .prestataire-card {
-    flex: 0 0 calc(25% - 15px);
-    height: 460.92px;
-    border-radius: 14px;
-    border: 1px solid #E3E3E3;
-    box-sizing: border-box;
-    background-color: white;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-top: 20px;
-  }
+  flex: 0 0 calc(23% - 10px);
+  box-sizing: border-box;
+  background-color: white;
+  border: 1px solid #E3E3E3;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 450px;
+}
+
+
+  .prestataire-card:hover {
+  transform: scale(1.03);
+}
 
 .prestataire-card-link {
-  text-decoration: none; /* Remove underline from the link wrapping the card */
+  text-decoration: none; 
 }
 
 .prestataire-card a {

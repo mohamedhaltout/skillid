@@ -261,7 +261,7 @@ body {
     border-color: #5A3378;
 }
 
-.status-accepted, .status-completed, .status-paid {
+.status-accepted, .status-completed, .status-paid, .status-meeting_confirmed {
     color: #28a745; /* Green color for accepted/completed/paid status */
     font-weight: bold;
 }

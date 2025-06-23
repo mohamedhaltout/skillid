@@ -1,15 +1,15 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-require 'config.php';
-session_start();
 
+require 'config.php';
+
+// Check the user is a prestataire or not if not redirect it to the login page
+session_start();
 if (!isset($_SESSION['artisan_id']) || $_SESSION['role'] !== 'prestataire') {
     header("Location: login.php");
     exit();
 }
 
-// Get the id_prestataire
+// Check the current user from the utilisateur table and artisan from prestataire table and get the id prestataire
 $stmt = $pdo->prepare("SELECT id_prestataire FROM Prestataire WHERE id_utilisateur = ?");
 $stmt->execute([$_SESSION['id_utilisateur']]);
 $prestataire = $stmt->fetch();
@@ -24,9 +24,13 @@ $experience_data = null;
 $existing_media = [];
 $is_edit_mode = false;
 
+
+// if find in the link edit_id entre to the edit mode
 if (isset($_GET['edit_id'])) {
     $is_edit_mode = true;
     $edit_id = $_GET['edit_id'];
+
+    // Get the data from Experience Prestataire
     $stmt = $pdo->prepare("SELECT * FROM Experience_prestataire WHERE id_experience = ? AND id_prestataire = ?");
     $stmt->execute([$edit_id, $id_prestataire]);
     $experience_data = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -41,6 +45,8 @@ if (isset($_GET['edit_id'])) {
     $existing_media = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+
+// Check if the Form Was Submited
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo "<p style='color: blue;'>Debug: POST request received.</p>";
     echo "<pre style='background-color: #f0f0f0; padding: 10px; border: 1px solid #ccc;'>";
@@ -50,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     print_r($_FILES);
     echo "</pre>";
 
-    // Handle single experience edit submission
+    // Get the Data To edit
     if (isset($_POST['id_experience'])) {
         echo "<p style='color: blue;'>Debug: Handling single experience edit submission.</p>";
         $titre = $_POST['experiences'][0]['titre_experience'] ?? ''; // Assuming edit mode uses index 0
@@ -63,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             try {
                 $pdo->beginTransaction();
+                // Update the Experience in the database
                 $stmt = $pdo->prepare("UPDATE Experience_prestataire SET titre_experience = ?, description = ?, date_project = ? WHERE id_experience = ? AND id_prestataire = ?");
                 $stmt->execute([$titre, $description, $annee, $id_experience_to_update, $id_prestataire]);
                 $message = "Experience updated successfully!";
@@ -86,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 // Handle new file uploads for single edit (assuming media_files_0[] for the edit form)
-                if (isset($_FILES['media_files_0']) && !empty($_FILES['media_files_0']['name'][0])) {
+                if (isset($_FILES['media_files_0'])) {
                     $uploadDir = "uploads/media/";
                     if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
 
@@ -107,8 +114,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 $pdo->commit();
                 echo "<p style='color: green;'>Debug: Transaction committed successfully for experience update.</p>";
-                // header("Location: artisan.php?id=" . $id_prestataire); // Temporarily commented out for debugging
-                // exit; // Temporarily commented out for debugging
+                header("Location: artisan.php?id=" . $id_prestataire);
+                exit;
             } catch (PDOException $e) {
                 $pdo->rollBack();
                 $message = "Error updating experience: " . $e->getMessage();
@@ -190,8 +197,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
-
 
 
 <!DOCTYPE html>
@@ -283,16 +288,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     ?>
                                         <label for="<?= $input_id ?>" class="media-upload-button <?= $is_filled ?>" id="<?= $button_id ?>" data-media-id="<?= $media_id ?>">
                                             <input type="file" name="media_files_0[]" id="<?= $input_id ?>" accept="image/*,video/*" hidden onchange="previewMedia(this, '0-<?= $i + 1 ?>')">
-                                            <?php if ($media_item): ?>
-                                                <?php if ($media_type === 'image'): ?>
-                                                    <img src="<?= $media_src ?>" alt="Media Preview" class="preview">
-                                                <?php elseif ($media_type === 'video'): ?>
-                                                    <video src="<?= $media_src ?>" controls class="preview"></video>
-                                                <?php endif; ?>
-                                                <button type="button" class="delete-media-button" onclick="deleteMedia(event, this, '<?= $media_id ?>')">X</button>
-                                            <?php else: ?>
-                                                <img src="img/add_media.svg" alt="Add Icon" class="add-icon">
-                                            <?php endif; ?>
+                                            <img src="img/add_media.svg" alt="Add Icon" class="add-icon" style="<?= $media_item ? 'display: none;' : '' ?>">
+                                            <img src="<?= $media_item && $media_type === 'image' ? $media_src : '' ?>" alt="Media Preview" class="preview-image" style="<?= $media_item && $media_type === 'image' ? '' : 'display: none;' ?>">
+                                            <video src="<?= $media_item && $media_type === 'video' ? $media_src : '' ?>" controls class="preview-video" style="<?= $media_item && $media_type === 'video' ? '' : 'display: none;' ?>"></video>
+                                            <button type="button" class="delete-media-button" style="<?= $media_item ? '' : 'display: none;' ?>" onclick="deleteMedia(event, this, '<?= $media_id ?>')">X</button>
                                         </label>
                                     <?php endfor; ?>
                                 </div>
@@ -342,6 +341,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <label for="media-upload-0-<?= $i + 1 ?>" class="media-upload-button" id="button-0-<?= $i + 1 ?>">
                                             <input type="file" name="media_files_0[]" id="media-upload-0-<?= $i + 1 ?>" accept="image/*,video/*" hidden onchange="previewMedia(this, '0-<?= $i + 1 ?>')">
                                             <img src="img/add_media.svg" alt="Add Icon" class="add-icon">
+                                            <img src="" alt="Media Preview" class="preview-image" style="display: none;">
+                                            <video src="" controls class="preview-video" style="display: none;"></video>
+                                            <button type="button" class="delete-media-button" style="display: none;">X</button>
                                         </label>
                                     <?php endfor; ?>
                                 </div>
@@ -375,69 +377,56 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 console.error(`Button with ID button-${index} not found.`);
                 return;
             }
-            const existingPreview = button.querySelector('.preview');
-            const existingAddIcon = button.querySelector('.add-icon');
-            const existingDeleteButton = button.querySelector('.delete-media-button');
+
+            const addIcon = button.querySelector('.add-icon');
+            const previewImage = button.querySelector('.preview-image');
+            const previewVideo = button.querySelector('.preview-video');
+            const deleteButton = button.querySelector('.delete-media-button');
 
             if (input.files && input.files[0]) {
                 const file = input.files[0];
                 const reader = new FileReader();
 
+                // If an existing media is being replaced, add its ID to the deleted list
+                const existingMediaId = button.getAttribute('data-media-id');
+                if (existingMediaId && !deletedMediaIds.includes(existingMediaId)) {
+                    deletedMediaIds.push(existingMediaId);
+                    const deleteMediaIdsInput = document.getElementById('delete-media-ids');
+                    if (deleteMediaIdsInput) {
+                        deleteMediaIdsInput.value = deletedMediaIds.join(',');
+                    }
+                    button.removeAttribute('data-media-id'); // Remove the ID from the button to prevent re-adding
+                }
+
                 reader.onload = function(e) {
-                    if (existingPreview) {
-                        existingPreview.remove();
-                    }
-                    if (existingAddIcon) {
-                        existingAddIcon.remove();
-                    }
-                    if (existingDeleteButton) {
-                        existingDeleteButton.remove();
-                    }
+                    addIcon.style.display = 'none';
+                    deleteButton.style.display = 'block';
+                    button.classList.add('preview-added');
 
-                    let mediaElement;
                     if (file.type.startsWith('image/')) {
-                        mediaElement = document.createElement('img');
-                        mediaElement.src = e.target.result;
-                        mediaElement.alt = "Media Preview";
-                        mediaElement.classList.add('preview');
+                        previewImage.src = e.target.result;
+                        previewImage.style.display = 'block';
+                        previewVideo.style.display = 'none';
+                        previewVideo.src = ''; // Clear video src
                     } else if (file.type.startsWith('video/')) {
-                        mediaElement = document.createElement('video');
-                        mediaElement.src = e.target.result;
-                        mediaElement.controls = true;
-                        mediaElement.classList.add('preview');
-                    }
-
-                    if (mediaElement) {
-                        button.prepend(mediaElement);
-                        button.classList.add('preview-added');
-
-                        const deleteButton = document.createElement('button');
-                        deleteButton.type = 'button';
-                        deleteButton.classList.add('delete-media-button');
-                        deleteButton.textContent = 'X';
-                        deleteButton.onclick = (event) => deleteMedia(event, deleteButton, null, input);
-                        button.appendChild(deleteButton);
+                        previewVideo.src = e.target.result;
+                        previewVideo.style.display = 'block';
+                        previewImage.style.display = 'none';
+                        previewImage.src = ''; // Clear image src
                     }
                 };
                 reader.readAsDataURL(file);
             } else {
                 // If file is cleared, revert to add icon
-                if (existingPreview) {
-                    existingPreview.remove();
-                }
-                if (existingDeleteButton) {
-                    existingDeleteButton.remove();
-                }
-                // Ensure the add icon is present if no file is selected
-                if (!existingAddIcon) {
-                    const addIcon = document.createElement('img');
-                    addIcon.src = "img/add_media.svg";
-                    addIcon.alt = "Add Icon";
-                    addIcon.classList.add('add-icon');
-                    button.prepend(addIcon);
-                }
+                addIcon.style.display = 'block';
+                deleteButton.style.display = 'none';
+                previewImage.style.display = 'none';
+                previewVideo.style.display = 'none';
+                previewImage.src = '';
+                previewVideo.src = '';
                 button.classList.remove('preview-added');
-                button.removeAttribute('data-media-id');
+                // No need to remove data-media-id here, as it would have been removed if an existing media was replaced.
+                // If it was a new upload that was cleared, it wouldn't have had a data-media-id.
             }
         }
 
@@ -445,6 +434,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             event.stopPropagation();
 
             const parentLabel = buttonElement.closest('.media-upload-button');
+            const addIcon = parentLabel.querySelector('.add-icon');
+            const previewImage = parentLabel.querySelector('.preview-image');
+            const previewVideo = parentLabel.querySelector('.preview-video');
+            const deleteButton = parentLabel.querySelector('.delete-media-button');
+
             if (mediaId) {
                 deletedMediaIds.push(mediaId);
                 const deleteMediaIdsInput = document.getElementById('delete-media-ids');
@@ -453,23 +447,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            if (fileInput) {
-                fileInput.value = '';
+            // Clear the file input
+            const actualFileInput = fileInput || parentLabel.querySelector('input[type="file"]');
+            if (actualFileInput) {
+                actualFileInput.value = ''; // Clear the value first
+                // This hack forces the onchange event to fire even if the same file is selected again
+                actualFileInput.type = 'text';
+                actualFileInput.type = 'file';
             }
 
-            const preview = parentLabel.querySelector('.preview');
-            if (preview) {
-                preview.remove();
-            }
-            buttonElement.remove();
-
-            const addIcon = document.createElement('img');
-            addIcon.src = "img/add_media.svg";
-            addIcon.alt = "Add Icon";
-            addIcon.classList.add('add-icon');
-            parentLabel.prepend(addIcon);
+            // Reset display
+            addIcon.style.display = 'block';
+            deleteButton.style.display = 'none';
+            previewImage.style.display = 'none';
+            previewVideo.style.display = 'none';
+            previewImage.src = '';
+            previewVideo.src = '';
             parentLabel.classList.remove('preview-added');
-            parentLabel.removeAttribute('data-media-id');
+            parentLabel.removeAttribute('data-media-id'); // Remove data-media-id if it was an existing media
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -520,22 +515,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         button.removeAttribute('data-media-id');
                         button.id = `button-${experienceCounter}-${i + 1}`; // Update button ID
 
-                        const preview = button.querySelector('.preview');
-                        if (preview) {
-                            preview.remove();
-                        }
+                        // Find and reset the new elements
+                        const addIcon = button.querySelector('.add-icon');
+                        const previewImage = button.querySelector('.preview-image');
+                        const previewVideo = button.querySelector('.preview-video');
                         const deleteBtn = button.querySelector('.delete-media-button');
-                        if (deleteBtn) {
-                            deleteBtn.remove();
-                        }
-                        let addIcon = button.querySelector('.add-icon');
-                        if (!addIcon) {
-                            addIcon = document.createElement('img');
-                            addIcon.src = "img/add_media.svg";
-                            addIcon.alt = "Add Icon";
-                            addIcon.classList.add('add-icon');
-                            button.prepend(addIcon);
-                        }
+
+                        addIcon.style.display = 'block';
+                        deleteBtn.style.display = 'none';
+                        previewImage.style.display = 'none';
+                        previewVideo.style.display = 'none';
+                        previewImage.src = '';
+                        previewVideo.src = '';
                     });
 
                     experienceFormsContainer.appendChild(clonedBlock);

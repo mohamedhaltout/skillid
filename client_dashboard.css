@@ -483,8 +483,8 @@ body {
         padding: 10.5px;
     }
 
-    .status-effectué, .status-paid, .status-completed, .status-accepted {
-        color: #28a745; 
+    .status-effectué, .status-paid, .status-completed, .status-accepted, .status-meeting_confirmed {
+        color: #28a745;
         font-weight: bold;
     }
 

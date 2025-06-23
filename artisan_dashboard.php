@@ -1,23 +1,20 @@
 <?php
 session_start();
-error_log("artisan_dashboard.php: Session ID at start: " . session_id());
-error_log("artisan_dashboard.php: Session content at start: " . print_r($_SESSION, true));
-include('config.php');
+require 'config.php';
 
+// Check if the user is a Artisan
 if (!isset($_SESSION['artisan_id']) || $_SESSION['role'] !== 'prestataire') {
-    error_log("artisan_dashboard.php: Session check failed. artisan_id: " . (isset($_SESSION['artisan_id']) ? $_SESSION['artisan_id'] : 'NOT SET') . ", role: " . (isset($_SESSION['role']) ? $_SESSION['role'] : 'NOT SET') . ". Redirecting to login.php");
     header("Location: login.php");
     exit();
 }
-error_log("artisan_dashboard.php: Session check passed. artisan_id: " . $_SESSION['artisan_id'] . ", role: " . $_SESSION['role']);
 
+// Store the Artisan ID From the session and store to use it later
 $artisan_id = $_SESSION['artisan_id'];
-error_log("artisan_dashboard.php: Attempting to fetch artisan details for artisan_id: " . $artisan_id);
 
-// Fetch artisan details
+
+// Fetch artisan details and if has a Problem Prepare Redirect to login
 $stmt = $conn->prepare("SELECT u.nom, u.prenom, p.photo FROM Prestataire p JOIN Utilisateur u ON p.id_utilisateur = u.id_utilisateur WHERE p.id_prestataire = ?");
 if ($stmt === false) {
-    error_log("artisan_dashboard.php: Failed to prepare statement for artisan details: " . $conn->error);
     header("Location: login.php");
     exit();
 }
@@ -26,17 +23,21 @@ $stmt->execute();
 $result = $stmt->get_result();
 $artisan = $result->fetch_assoc();
 
+
+// If Not artisan Redirect it to the login page
 if (!$artisan) {
-    error_log("artisan_dashboard.php: Artisan data not found for id: " . $artisan_id . ". Redirecting to login.php");
     header("Location: login.php");
     exit();
 }
 
+
+// Show the artisan full name and image
 $artisan_name = $artisan['nom'] . ' ' . $artisan['prenom'];
 $artisan_image = !empty($artisan['photo']) ? $artisan['photo'] : 'img/profil.svg'; // Default image if not set
-$stmt->close();
 
-// Fetch pending requests
+
+
+// Fetch Les Deamndes en attendes
 $pending_requests = [];
 $stmt = $conn->prepare("SELECT r.id_reservation, u.nom AS client_nom, u.prenom AS client_prenom, r.date_debut, p.ville, r.description_service
                         FROM Reservation r
@@ -50,10 +51,9 @@ $result = $stmt->get_result();
 while ($row = $result->fetch_assoc()) {
     $pending_requests[] = $row;
 }
-$stmt->close();
-error_log("Pending Requests: " . print_r($pending_requests, true));
 
-// Fetch accepted requests
+
+// Fetch Les Deamndes Accepté
 $accepted_requests = [];
 $stmt = $conn->prepare("SELECT r.id_reservation, u.nom AS client_nom, u.prenom AS client_prenom, cl.telephone AS client_phone, r.date_debut, p.ville
                         FROM Reservation r
@@ -67,11 +67,10 @@ $result = $stmt->get_result();
 while ($row = $result->fetch_assoc()) {
     $accepted_requests[] = $row;
 }
-$stmt->close();
-error_log("Accepted Requests: " . print_r($accepted_requests, true));
 
 
-// Fetch refused requests
+
+// Fetch Les Demande Refusé
 $refused_requests = [];
 $stmt = $conn->prepare("SELECT r.id_reservation, u.nom AS client_nom, u.prenom AS client_prenom, r.date_debut, p.ville, r.description_service
                         FROM Reservation r
@@ -85,10 +84,9 @@ $result = $stmt->get_result();
 while ($row = $result->fetch_assoc()) {
     $refused_requests[] = $row;
 }
-$stmt->close();
-error_log("Refused Requests: " . print_r($refused_requests, true));
 
-// Fetch accepted devis
+
+// Fetch Devis accepté
 $accepted_devis = [];
 $stmt = $conn->prepare("SELECT d.id_devis, d.cout_total AS montant, d.date_debut_travaux AS date_creation, d.date_fin_travaux, d.statut AS devis_statut,
                         u.nom AS client_nom, u.prenom AS client_prenom, r.description_service
@@ -103,8 +101,8 @@ $result = $stmt->get_result();
 while ($row = $result->fetch_assoc()) {
     $accepted_devis[] = $row;
 }
-$stmt->close();
-error_log("Accepted Devis: " . print_r($accepted_devis, true));
+
+
 
 // Fetch devis with 'edit_requested' status
 $edit_requested_devis = [];
@@ -121,8 +119,6 @@ $result = $stmt->get_result();
 while ($row = $result->fetch_assoc()) {
     $edit_requested_devis[] = $row;
 }
-$stmt->close();
-error_log("Edit Requested Devis: " . print_r($edit_requested_devis, true));
 
 
 
@@ -133,7 +129,7 @@ $stmt->bind_param("i", $artisan_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $completed_projects_count = $result->fetch_assoc()['count'];
-$stmt->close();
+
 
 // Fetch received requests count (including 'pending', 'accepted', and 'refused')
 $received_requests_count = 0;
@@ -142,7 +138,7 @@ $stmt->bind_param("i", $artisan_id);
 $stmt->execute();
 $result = $stmt->get_result();
 $received_requests_count = $result->fetch_assoc()['count'];
-$stmt->close();
+
 
 // Fetch average rating
 $average_rating = "N/A";
@@ -157,10 +153,10 @@ if ($stmt === false) {
     if ($row['average_note'] !== null) {
         $average_rating = number_format($row['average_note'], 1);
     }
-    $stmt->close();
+
 }
 
-
+//////////////////////////////////////////////////////////////////////////////////////
 // Fetch paid devis
 $paid_devis = [];
 $stmt = $conn->prepare("SELECT d.id_devis, d.cout_total AS montant, d.date_debut_travaux AS date_creation, d.date_fin_travaux, d.statut AS devis_statut,
@@ -169,9 +165,9 @@ $stmt = $conn->prepare("SELECT d.id_devis, d.cout_total AS montant, d.date_debut
                         JOIN Reservation r ON d.id_reservation = r.id_reservation
                         JOIN Client cl ON r.id_client = cl.id_client
                         JOIN Utilisateur u ON cl.id_utilisateur = u.id_utilisateur
-                        WHERE r.id_prestataire = ? AND d.statut = 'paid'");
+                        WHERE r.id_prestataire = ? AND (d.statut = 'paid' OR d.statut = 'meeting_confirmed')");
 if ($stmt === false) {
-    error_log("artisan_dashboard.php: Failed to prepare statement for paid devis: " . $conn->error);
+
 } else {
     $stmt->bind_param("i", $artisan_id);
     $stmt->execute();
@@ -179,9 +175,31 @@ if ($stmt === false) {
     while ($row = $result->fetch_assoc()) {
         $paid_devis[] = $row;
     }
-    $stmt->close();
+
 }
-error_log("Paid Devis: " . print_r($paid_devis, true));
+
+
+// Fetch canceled devis
+$canceled_devis = [];
+$stmt = $conn->prepare("SELECT d.id_devis, d.cout_total AS montant, d.date_debut_travaux AS date_creation, d.date_fin_travaux, d.statut AS devis_statut,
+                        u.nom AS client_nom, u.prenom AS client_prenom, r.description_service
+                        FROM Devis d
+                        JOIN Reservation r ON d.id_reservation = r.id_reservation
+                        JOIN Client cl ON r.id_client = cl.id_client
+                        JOIN Utilisateur u ON cl.id_utilisateur = u.id_utilisateur
+                        WHERE r.id_prestataire = ? AND d.statut = 'cancelled'");
+if ($stmt === false) {
+    error_log("artisan_dashboard.php: Failed to prepare statement for canceled devis: " . $conn->error);
+} else {
+    $stmt->bind_param("i", $artisan_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $canceled_devis[] = $row;
+    }
+
+}
+error_log("Canceled Devis: " . print_r($canceled_devis, true));
 
 // Fetch devis requiring artisan meeting confirmation
 $meeting_confirmation_pending_artisan = [];
@@ -471,7 +489,50 @@ $stmt->close();
             </div>
         </section>
 
+        </section>
 
+        <section class="canceled-devis-section">
+            <h2 class="section-title">Vos devis annulés</h2>
+            <div class="canceled-devis-list">
+                <?php if (empty($canceled_devis)): ?>
+                    <p>Aucun devis annulé pour le moment.</p>
+                <?php else: ?>
+                    <?php foreach ($canceled_devis as $devis): ?>
+                        <div class="devis-item">
+                            <div class="devis-details">
+                                <div class="detail-group">
+                                    <span class="detail-label">Client:</span>
+                                    <span class="detail-value"><?php echo htmlspecialchars($devis['client_nom'] . ' ' . $devis['client_prenom']); ?></span>
+                                </div>
+                                <div class="detail-group">
+                                    <span class="detail-label">Service:</span>
+                                    <span class="detail-value"><?php echo htmlspecialchars($devis['description_service']); ?></span>
+                                </div>
+                                <div class="detail-group">
+                                    <span class="detail-label">Montant:</span>
+                                    <span class="detail-value"><?php echo htmlspecialchars($devis['montant']); ?> MAD</span>
+                                </div>
+                                <div class="detail-group">
+                                    <span class="detail-label">Date de création:</span>
+                                    <span class="detail-value"><?php echo htmlspecialchars($devis['date_creation']); ?></span>
+                                </div>
+                                <div class="detail-group">
+                                    <span class="detail-label">Date fin travaux:</span>
+                                    <span class="detail-value"><?php echo htmlspecialchars($devis['date_fin_travaux']); ?></span>
+                                </div>
+                                <div class="detail-group">
+                                    <span class="detail-label">Statut:</span>
+                                    <span class="detail-value status-cancelled"><?php echo htmlspecialchars(ucfirst($devis['devis_statut'])); ?></span>
+                                </div>
+                            </div>
+                            <div class="devis-actions">
+                                <button class="button view-devis-button" onclick="location.href='view_devis.php?id=<?php echo $devis['id_devis']; ?>'">View Devis</button>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </section>
 
         <section class="meeting-confirmation-section">
             <h2 class="section-title">Confirmer la réunion</h2>

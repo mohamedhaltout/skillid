@@ -135,7 +135,7 @@ $stmt = $conn->prepare("SELECT d.id_devis, d.cout_total, d.tarif_journalier, d.a
                         JOIN Reservation r ON d.id_reservation = r.id_reservation
                         JOIN Prestataire pr ON r.id_prestataire = pr.id_prestataire
                         JOIN Utilisateur u ON pr.id_utilisateur = u.id_utilisateur
-                        WHERE r.id_client = ? AND d.statut = 'paid'");
+                        WHERE r.id_client = ? AND (d.statut = 'paid' OR d.statut = 'meeting_confirmed')");
 $stmt->bind_param("i", $client_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -639,10 +639,7 @@ $conn->close();
                                     <span class="detail-label">Type de paiement:</span>
                                     <span class="detail-value"><?php echo htmlspecialchars(ucfirst($payment['type_paiement'])); ?></span>
                                 </div>
-                                <div class="detail-group">
-                                    <span class="detail-label">Méthode:</span>
-                                    <span class="detail-value"><?php echo htmlspecialchars(ucfirst($payment['methode_paiement'])); ?></span>
-                                </div>
+
                                 <div class="detail-group">
                                     <span class="detail-label">Date:</span>
                                     <span class="detail-value"><?php echo htmlspecialchars(date('Y-m-d H:i', strtotime($payment['date_paiement']))); ?></span>

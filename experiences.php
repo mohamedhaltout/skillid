@@ -1,10 +1,33 @@
 <?php
 require 'config.php';
 
-// Fetch all experiences from the database
-$stmt = $pdo->prepare("SELECT * FROM Experience_prestataire ORDER BY date_project DESC");
-$stmt->execute();
-$experiences = $stmt->fetchAll(PDO::FETCH_ASSOC);
+// Initialize variables
+$id_prestataire = null;
+$artisan_name = '';
+
+// Check if an artisan ID is provided in the URL
+if (isset($_GET['id'])) {
+    $id_prestataire = (int) $_GET['id'];
+
+    // Fetch experiences for the specific artisan
+    $stmt = $pdo->prepare("SELECT * FROM Experience_prestataire WHERE id_prestataire = ? ORDER BY date_project DESC");
+    $stmt->execute([$id_prestataire]);
+    $experiences = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Fetch artisan's name for the title
+    $stmt_artisan = $pdo->prepare("SELECT u.nom, u.prenom FROM Prestataire p JOIN Utilisateur u ON p.id_utilisateur = u.id_utilisateur WHERE p.id_prestataire = ?");
+    $stmt_artisan->execute([$id_prestataire]);
+    $artisan_info = $stmt_artisan->fetch(PDO::FETCH_ASSOC);
+    if ($artisan_info) {
+        $artisan_name = htmlspecialchars($artisan_info['prenom'] . ' ' . $artisan_info['nom']);
+    }
+
+} else {
+    // Fetch all experiences from the database if no specific artisan ID is provided
+    $stmt = $pdo->prepare("SELECT * FROM Experience_prestataire ORDER BY date_project DESC");
+    $stmt->execute();
+    $experiences = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
 
 // Fetch media for each experience
 foreach ($experiences as &$experience) {
@@ -26,7 +49,7 @@ unset($experience); // Break the reference with the last element
 </head>
 <body>
     <header>
-        <h1>Our Experiences</h1>
+        <h1><?= $id_prestataire ? $artisan_name . "'s Experiences" : "Our Experiences" ?></h1>
     </header>
 
     <main class="experiences-container">

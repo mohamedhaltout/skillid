@@ -179,23 +179,23 @@ body {
 }
 
 .accept-button {
-    background-color: #4CAF50; /* Green */
+    background-color: #3E185B; /* Green */
     color: white;
     border: none;
 }
 
 .accept-button:hover {
-    background-color: #45a049;
+    background-color: #4c2867;
 }
 
 .edit-request-button {
-    background-color: #FFC107; /* Amber */
-    color: #333;
+    background-color: #84659C; /* Amber */
+    color: #ffffff;
     border: none;
 }
 
 .edit-request-button:hover {
-    background-color: #e0a800;
+    background-color: #84659C;
 }
 
 .pay-now-button {

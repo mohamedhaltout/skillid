@@ -36,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $new_tarif_journalier = trim($_POST['tarif_journalier'] ?? '');
     $new_accepte_budget_global = isset($_POST['accept_budget']) ? 1 : 0;
 
+
     $photo_updated = false;
     $new_photo_path = $artisan['photo']; // Default to existing photo
 
@@ -54,10 +55,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+
+// Check if all the field is Not empty
     if (empty($new_nom) || empty($new_prenom) || empty($new_telephone) || empty($new_specialite_id) || empty($new_pays) || empty($new_ville) || empty($new_tarif_journalier)) {
         $message = "All fields are required.";
     } else {
         try {
+
+            // Start The Transaction
             $pdo->beginTransaction();
 
             // Update Utilisateur table
@@ -78,6 +83,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt_prestataire = $pdo->prepare($sql_prestataire);
             $stmt_prestataire->execute($params_prestataire);
 
+
+            // If all Success Edit Commit
             $pdo->commit();
             $message = "Profile updated successfully!";
             // Refresh artisan data after update
@@ -85,11 +92,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->execute([$id_utilisateur]);
             $artisan = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // Update session variables if necessary
+            // Update session names in the session
             $_SESSION['nom'] = $new_nom;
             $_SESSION['prenom'] = $new_prenom;
 
         } catch (PDOException $e) {
+            // If not Update Roll Back and show a Error Message
             $pdo->rollBack();
             $message = "Error updating profile: " . $e->getMessage();
         }

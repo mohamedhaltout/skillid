@@ -44,7 +44,7 @@ if ($devis_id) {
     <link rel="stylesheet" href="style_home.css"> <!-- Assuming a general CSS file -->
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Poppins", sans-serif;
             background-color: #f4f7f6;
             display: flex;
             justify-content: center;
@@ -68,7 +68,7 @@ if ($devis_id) {
         .amount-display {
             font-size: 1.5em;
             font-weight: bold;
-            color: #007bff;
+            color: #3E185B;
             margin-bottom: 25px;
         }
         #payment-form {
@@ -92,7 +92,7 @@ if ($devis_id) {
             background-color: #f8f9fa;
         }
         button {
-            background-color: #007bff;
+            background-color: #3E185B;
             color: white;
             padding: 12px 20px;
             border: none;
@@ -102,7 +102,7 @@ if ($devis_id) {
             transition: background-color 0.3s ease;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color:rgb(77, 40, 105);
         }
         .error-message {
             color: #dc3545;

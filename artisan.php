@@ -1,6 +1,6 @@
 <?php
 require 'config.php';
-session_start(); // Start session here
+session_start();
 
 // Redirect if artisan tries to view another artisan's profile or if not logged in
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'prestataire') {
@@ -8,40 +8,50 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'prestataire') {
     header("Location: artisan_dashboard.php");
     exit();
 }
-// No redirection for non-logged-in users or clients, allowing them to view the artisan page.
 
 $artisan_profile_photo = get_image_path('', 'prestataire'); // Default profile photo
 
-
+// Check if the Link Has In ID
 if (!isset($_GET['id'])) {
     die("No artisan specified.");
 }
+
+// Convert the id to a int number to save from sql Injection
 $id_prestataire = (int) $_GET['id'];
+
 
 // Check if the artisan has an active reservation
 $disable_demande_button = false; // Default to not disabled as artisans can accept multiple requests
 $reservation_message = ''; // No reservation message needed
 
+
+// Get the Standard Categories
 $stmt = $pdo->query("SELECT nom, icone FROM Categories WHERE type = 'standard'");
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+
+// Get the artisan Info 
 $stmt = $pdo->prepare("SELECT p.*, u.nom AS user_nom, u.prenom AS user_prenom, c.nom AS categorie_nom FROM Prestataire p JOIN Utilisateur u ON p.id_utilisateur = u.id_utilisateur JOIN Categories c ON p.id_categorie = c.id_categorie WHERE p.id_prestataire = ?");
 $stmt->execute([$id_prestataire]);
 $prestataire = $stmt->fetch();
 if (!$prestataire) die("Artisan not found.");
 
+
+// Get the latest Experience Prestataire based on the date_project
 $stmt = $pdo->prepare("SELECT * FROM Experience_prestataire WHERE id_prestataire = ? ORDER BY date_project DESC LIMIT 1");
 $stmt->execute([$id_prestataire]);
 $experience = $stmt->fetch();
 
+
+// Get the experience from Media Experience Table and if he is valable store him in this "media" array
 $media = [];
 if ($experience) {
     $stmt = $pdo->prepare("SELECT * FROM Media_experience WHERE id_experience = ?");
-    $stmt->execute([$experience['id_experience']]);
+    $stmt->execute([$experience['id_experience']]); 
     $media = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
-// Fetch evaluations for the artisan
+// Fetch evaluations for the artisan and add the client names and show him DESC New to O
 $stmt_evaluations = $pdo->prepare("
     SELECT e.*, u.nom AS client_nom, u.prenom AS client_prenom
     FROM Evaluation e
@@ -79,7 +89,9 @@ if ($total_reviews > 0) {
         <header class="main-header">
         <div class="header-top-bar">
             <div class="header-logo">
+                <a href="home.php">
                 <img src="img/skilled_logo.svg" class="header-logo-img" />
+                </a>
                 <span class="header-logo-text">Skilled<span class="header-logo-dot">.</span></span>
             </div>
             <div class="header-search-container">
@@ -92,12 +104,17 @@ if ($total_reviews > 0) {
                     </div>
                 </form>
             </div>
+
+            <!-- Header-Right Section -->
             <div class="header-right-nav">
-                <img src="img/Notification.svg" class="header-icon" />
-                <img src="img/message.svg" class="header-icon" />
-                <img src="img/favorite.svg" class="header-icon" />
-                <span class="header-orders">Orders</span>
-                <span class="header-switch">Switch to Artisans</span>
+                <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'client'): ?>
+                    <a href="client_dashboard.php" class="header-orders">Orders</a>
+                <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'prestataire'): ?>
+                    <a href="artisan_dashboard.php" class="header-orders">Orders</a>
+                <?php else: ?>
+                    <span class="header-orders">Orders</span>
+                <?php endif; ?>
+                <a href="sign_up_artisan.php" class="header-switch">Switch to Artisans</a>
                 <div class="profile-dropdown">
                     <img src="<?= htmlspecialchars($artisan_profile_photo) ?>" class="header-profile-pic" onclick="toggleProfileDropdown(event)" />
                     <div class="dropdown-content">
@@ -111,6 +128,8 @@ if ($total_reviews > 0) {
                 </div>
             </div>
         </div>
+
+        <!-- Categories Slider -->
         <div class="header-line"></div>
         <div class="categories-nav-bar">
             <div class="categories-scroll-slider">
@@ -125,36 +144,52 @@ if ($total_reviews > 0) {
         </div>
     </header>
 
+    <!-- Artisan Profil -->
     <main class="artisan-profile-layout">
         <section class="profile-info-section">
             <div class="artisan-bio-header">
+
+                <!-- Profil Image -->
                 <img src="<?= htmlspecialchars(get_image_path($prestataire['photo'], 'prestataire')) ?>" class="artisan-profile-avatar">
                 <div class="artisan-main-details">
+
+                    <!-- artisan name and Tarif Journalier -->
                     <div class="name-and-price-line">
                         <h1 class="artisan-full-name"><?= htmlspecialchars($prestataire['user_prenom'] . ' ' . $prestataire['user_nom']) ?></h1>
                         <span class="artisan-service-price"><?= htmlspecialchars($prestataire['tarif_journalier']) ?> DH/jour</span>
                     </div>
+
+                    <!-- Rating the numbers of the stars and the evaluations-->
                     <div class="artisan-reviews-summary">
+                        <img src="img/rating.svg" class="Rating-icon">
                         <div class="star-rating-display" data-rating="<?= htmlspecialchars($average_rating) ?>"></div>
                         <span class="artisan-rating-score"><?= htmlspecialchars(number_format($average_rating, 1)) ?></span>
                         <span class="artisan-total-reviews">(<?= htmlspecialchars($total_reviews) ?>)</span>
                     </div>
+                    
+                    <!-- Location -->
                     <div class="artisan-location-info">
                         <img src="img/location_icon.svg" class="location-marker-icon">
                         <span class="artisan-location-text"><?= htmlspecialchars($prestataire['ville'] . ', ' . $prestataire['pays']) ?></span>
                     </div>
                 </div>
             </div>
+
+            <!-- Categorie , Titre , Description -->
             <h2 class="artisan-service-category"><?= htmlspecialchars($prestataire['categorie_nom']) ?></h2>
             <p class="artisan-short-description"><?= htmlspecialchars($experience['titre_experience'] ?? 'No experience yet') ?></p>
             <p class="artisan-long-description"><?= htmlspecialchars($experience['description'] ?? 'No description provided') ?></p>
 
             <div class="artisan-media-gallery">
+
+            <!-- Main Gallery Image with Arrows -->
                 <div class="main-media-viewer">
                     <img src="<?= htmlspecialchars(get_image_path($media[0]['chemin_fichier'] ?? '', 'media')) ?>" class="main-gallery-image">
                     <img src="img/arrow_slide_left.svg" class="gallery-arrow arrow-left">
                     <img src="img/arrow_slide_right.svg" class="gallery-arrow arrow-right">
                 </div>
+
+                <!-- Thumbails Images under the Main Media Image -->
                 <div class="thumbnail-media-carousel">
                     <?php foreach ($media as $m): ?>
                         <img src="<?= htmlspecialchars(get_image_path($m['chemin_fichier'], 'media')) ?>" class="gallery-thumbnail">
@@ -162,6 +197,7 @@ if ($total_reviews > 0) {
                 </div>
             </div>
 
+            <!-- Redirect the Client to the Experiences for this Specifique artisan -->
             <div class="view-all-experiences-button-container">
                 <a href="experiences.php?id=<?= htmlspecialchars($id_prestataire) ?>" class="view-all-experiences-button">View All Experiences</a>
             </div>
@@ -170,10 +206,13 @@ if ($total_reviews > 0) {
                 <h3 class="reviews-section-title">Reviews</h3>
                 <div class="reviews-list">
                     <?php if ($total_reviews > 0): ?>
+
                         <?php foreach ($evaluations as $evaluation): ?>
                             <div class="review-item">
                                 <div class="review-header">
+                                    <!-- Client name -->
                                     <span class="reviewer-name"><?= htmlspecialchars($evaluation['client_prenom'] . ' ' . $evaluation['client_nom']) ?></span>
+                                    <!-- Number of Evaluations -->
                                     <div class="review-rating">
                                         <?php for ($i = 1; $i <= 5; $i++): ?>
                                             <?php if ($i <= $evaluation['note']): ?>
@@ -185,6 +224,7 @@ if ($total_reviews > 0) {
                                         <span class="rating-score"><?= htmlspecialchars(number_format($evaluation['note'], 1)) ?></span>
                                     </div>
                                 </div>
+                                <!-- Commentaire and Date -->
                                 <p class="review-comment"><?= htmlspecialchars($evaluation['commentaire']) ?></p>
                                 <span class="review-date"><?= htmlspecialchars(date('F j, Y', strtotime($evaluation['date_evaluation']))) ?></span>
                             </div>
@@ -195,12 +235,30 @@ if ($total_reviews > 0) {
                 </div>
             </section>
         </section>
-<?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'client'): ?>
-                <button class="request-service-action-btn" data-prestataire-id="<?= $id_prestataire ?>">Demande De Service</button>
-            <?php else: ?>
-                <!-- If not a client, or not logged in, the button should trigger a login/signup prompt -->
-                <button class="request-service-action-btn" data-prestataire-id="<?= $id_prestataire ?>" data-requires-login="true">Demande De Service</button>
-            <?php endif; ?>
+
+        <!-- Demande service Buton if Client -->
+                <button class="request-service-action-btn" data-prestataire-id="<?= $id_prestataire ?>" <?= (isset($_SESSION['role']) && $_SESSION['role'] === 'client') ? '' : 'data-requires-login="true"' ?>>Demande De Service</button>
+            <script>
+
+                // If the Client Not Log In Redirect to the Login Page
+                document.addEventListener('DOMContentLoaded', function() {
+                    const requestServiceBtn = document.querySelector('.request-service-action-btn');
+
+                    requestServiceBtn.addEventListener('click', function(event) {
+                        event.preventDefault(); // Prevent default button action
+
+                        const prestataireId = this.dataset.prestataireId;
+                        const requiresLogin = this.dataset.requiresLogin === 'true';
+
+                        if (requiresLogin) {
+                            window.location.href = 'login.php'; // Redirect to login if not logged in
+                        } else {
+                            let redirectUrl = `demande_service.php?id_prestataire=${prestataireId}`;
+                            window.location.href = redirectUrl;
+                        }
+                    });
+                });
+            </script>
 
     </main>
 
@@ -337,12 +395,14 @@ if ($total_reviews > 0) {
     </style>
 
     <script>
+
+        // If the User Click On the Profil Image the Dropdown will show
         function toggleProfileDropdown(event) {
             event.stopPropagation(); // Prevent click from immediately closing the dropdown
             document.querySelector('.profile-dropdown').classList.toggle('show');
         }
 
-        // Close the dropdown if the user clicks outside of it
+        // Close the dropdown if the user clicks outside of Pic Image
         window.onclick = function(event) {
             if (!event.target.matches('.header-profile-pic')) {
                 let dropdowns = document.getElementsByClassName("profile-dropdown");
@@ -354,10 +414,6 @@ if ($total_reviews > 0) {
                 }
             }
         }
-    </script>
-    <script>
-        // Pass PHP session status to JavaScript
-        const isLoggedIn = <?= json_encode(isset($_SESSION['id_utilisateur'])) ?>;
     </script>
 </body>
 </html>

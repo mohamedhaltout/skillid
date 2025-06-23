@@ -72,6 +72,8 @@ if (isset($_GET['devis_id'])) {
                 $conn->commit();
                 $_SESSION['message'] = "Meeting confirmed by both parties!";
                 $_SESSION['message_type'] = "success";
+                header("Location: evaluation.php?devis_id=" . $devis_id);
+                exit();
             } else {
                 // Only artisan confirmed, wait for client
                 $conn->commit();

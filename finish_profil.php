@@ -42,6 +42,16 @@ if (isset($_POST['specialite'], $_POST['pays'], $_POST['ville'], $_POST['telepho
         $error = true;
     }
 
+    // Check for duplicate phone number
+    if (!$error) {
+        $checkPhoneStmt = $pdo->prepare("SELECT COUNT(*) FROM Prestataire WHERE telephone = ? AND id_utilisateur != ?");
+        $checkPhoneStmt->execute([$telephone, $id_utilisateur]);
+        if ($checkPhoneStmt->fetchColumn() > 0) {
+            $message = "This phone number is already registered. Please use a different one.";
+            $error = true;
+        }
+    }
+
     // Upload photo
     if (!$error) {
         $uploadDir = 'uploads/';

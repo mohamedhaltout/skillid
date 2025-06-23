@@ -77,7 +77,7 @@ if ($is_view_mode) {
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$disable_submit_button) {
         $description_service = trim($_POST['description_service'] ?? '');
         $budget_total = trim($_POST['budget_total'] ?? '');
-        $date_debut = trim($_POST['date_debut'] ?? '');
+        $date_debut = trim($_POST['date_debut'] ?? $_GET['start_date'] ?? ''); // Get from POST or GET
         $nb_jours_estime = trim($_POST['nb_jours_estime'] ?? '');
 
         // Validation
@@ -125,6 +125,8 @@ if ($is_view_mode) {
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="demande_service.css">
+  <!-- jQuery UI CSS -->
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <style>
         .message {
             padding: 10px;
@@ -142,6 +144,15 @@ if ($is_view_mode) {
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
+        }
+        /* Style for disabled dates in jQuery UI Datepicker */
+        .ui-datepicker-unselectable.ui-state-disabled {
+            background-color: #ffcccc !important; /* Light red background */
+            color: #888 !important;
+            cursor: not-allowed;
+        }
+        .ui-datepicker-unselectable.ui-state-disabled:hover {
+            background-color: #ffcccc !important;
         }
     </style>
 </head>
@@ -233,14 +244,13 @@ if ($is_view_mode) {
               <div class="description">When do you expect the service to start?</div>
             </div>
             <div class="form-input">
-              <input type="date" id="date_debut" name="date_debut" required value="<?= htmlspecialchars($_POST['date_debut'] ?? '') ?>" />
+              <input type="text" id="date_debut" name="date_debut" required value="<?= htmlspecialchars($_POST['date_debut'] ?? ($_GET['start_date'] ?? '')) ?>" />
             </div>
           </div>
 
           <div class="form-group">
             <div class="form-info">
               <label for="nb_jours_estime">Estimated Number of Days</label>
-              <div class="description">How many days do you estimate the service will take?</div>
             </div>
             <div class="form-input">
               <input type="number" id="nb_jours_estime" name="nb_jours_estime" placeholder="e.g., 3" required min="1" value="<?= htmlspecialchars($_POST['nb_jours_estime'] ?? '') ?>" />
@@ -265,5 +275,66 @@ if ($is_view_mode) {
       <?php endif; ?>
     </div>
   </div>
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <!-- jQuery UI -->
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script>
+    $(document).ready(function() {
+        const startDateInput = $('#date_debut');
+        const artisanId = <?= json_encode($id_prestataire ?? null) ?>; // Pass artisan ID from PHP
+        let reservedRanges = [];
+
+        if (artisanId) {
+            fetch(`fetch_reserved_dates.php?id_prestataire=${artisanId}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Raw data from fetch_reserved_dates.php:', data);
+                    if (data.error) {
+                        console.error('Error fetching reserved dates:', data.error);
+                        return;
+                    }
+                    reservedRanges = data;
+                    console.log('Processed reservedRanges for Datepicker:', reservedRanges);
+
+                    startDateInput.datepicker({
+                        dateFormat: "yy-mm-dd",
+                        minDate: 0, // Today or any future date
+                        beforeShowDay: function(date) {
+                            const dateString = $.datepicker.formatDate('yy-mm-dd', date);
+                            for (let i = 0; i < reservedRanges.length; i++) {
+                                const range = reservedRanges[i];
+                                if (dateString >= range.from && dateString <= range.to) {
+                                    return [false, 'ui-datepicker-unselectable ui-state-disabled', 'Reserved'];
+                                }
+                            }
+                            return [true, ''];
+                        }
+                    });
+
+                    // Set initial date if available from GET parameter
+                    const initialDate = startDateInput.val();
+                    if (initialDate) {
+                        startDateInput.datepicker('setDate', initialDate);
+                    }
+
+                })
+                .catch(error => {
+                    console.error('Network error fetching reserved dates:', error);
+                });
+        } else {
+            // If no artisanId, initialize Datepicker without disabled dates
+            startDateInput.datepicker({
+                dateFormat: "yy-mm-dd",
+                minDate: 0, // Today or any future date
+            });
+
+            const initialDate = startDateInput.val();
+            if (initialDate) {
+                startDateInput.datepicker('setDate', initialDate);
+            }
+        }
+    });
+  </script>
 </body>
 </html>

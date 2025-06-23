@@ -2,11 +2,15 @@
 session_start();
 include('config.php');
 
+
+// check if the user was log in and he is a client
 if (!isset($_SESSION['id_utilisateur']) || $_SESSION['role'] !== 'client') {
     header("Location: login.php");
     exit();
 }
 
+
+// Check if has in reservation id if not redirect the user to the client dashboard 
 if (!isset($_GET['id'])) {
     $_SESSION['message'] = "No reservation ID specified.";
     $_SESSION['message_type'] = 'error';

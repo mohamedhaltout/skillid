@@ -45,4 +45,11 @@ function get_image_path($image_name, $type = 'general') {
         return 'img/' . $image_name;
     }
 }
+function truncate_description($text, $word_limit = 5) {
+    $words = explode(' ', $text);
+    if (count($words) > $word_limit) {
+        return implode(' ', array_slice($words, 0, $word_limit)) . '...';
+    }
+    return $text;
+}
 ?>

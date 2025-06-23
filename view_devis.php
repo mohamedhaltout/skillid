@@ -174,7 +174,7 @@ if (!$devis_data) {
             <div class="devis-item">
                 <div class="devis-details">
                     <div class="detail-group">
-                        <span class="detail-label">Reservation ID:</span>
+                        <span class="detail-label">Reservation Numéro:</span>
                         <span class="detail-value"><?php echo htmlspecialchars($devis_data['id_reservation']); ?></span>
                     </div>
                     <div class="detail-group">
@@ -233,12 +233,21 @@ if (!$devis_data) {
                     <p class="status-message paid">Devis Paid</p>
                 <?php elseif ($devis_data['devis_statut'] === 'pending_payment'): ?>
                     <p class="status-message pending-payment">Pending Payment</p>
+                <?php elseif ($devis_data['devis_statut'] === 'cancelled'): ?>
+                    <p class="status-message cancelled">Devis Cancelled</p>
                 <?php endif; ?>
             <?php elseif ($user_role === 'prestataire'): ?>
                 <?php if ($devis_data['devis_statut'] === 'edit_requested'): ?>
                     <button class="button edit-devis-button" onclick="location.href='Create_quote.php?id_reservation=<?php echo htmlspecialchars($devis_data['id_reservation']); ?>&id_devis=<?php echo htmlspecialchars($devis_data['id_devis']); ?>'">Edit Quote</button>
                 <?php elseif ($devis_data['devis_statut'] === 'rejected'): ?>
                     <button class="button create-new-devis-button" onclick="location.href='Create_quote.php?id_reservation=<?php echo htmlspecialchars($devis_data['id_reservation']); ?>'">Create New Devis</button>
+                <?php elseif ($devis_data['devis_statut'] === 'paid' || $devis_data['devis_statut'] === 'meeting_confirmed'): ?>
+                    <form action="handle_artisan_cancel_devis.php" method="POST" style="display: inline;">
+                        <input type="hidden" name="id_devis" value="<?php echo htmlspecialchars($devis_data['id_devis']); ?>">
+                        <button type="submit" name="action" value="cancel_work" class="button cancel-button">Cancel Work</button>
+                    </form>
+                <?php elseif ($devis_data['devis_statut'] === 'cancelled'): ?>
+                    <p class="status-message cancelled">Devis Cancelled by Artisan</p>
                 <?php endif; ?>
             <?php endif; ?>
         </div>

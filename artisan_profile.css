@@ -240,7 +240,7 @@ button[type="submit"]:hover {
 
 .add-experience-button {
     display: inline-block;
-    background-color: #5cb85c; /* A green color for "add" action */
+    background-color: #84659C; /* A green color for "add" action */
     color: white;
     padding: 12px 20px;
     border: none;
@@ -252,5 +252,5 @@ button[type="submit"]:hover {
 }
 
 .add-experience-button:hover {
-    background-color: #4cae4c; /* Darker green on hover */
+    background-color: #84659C; /* Darker green on hover */
 }

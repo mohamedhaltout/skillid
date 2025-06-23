@@ -41,13 +41,13 @@
             display: inline-block;
             margin-top: 20px;
             padding: 10px 20px;
-            background-color: #007bff;
+            background-color: #3E185B;
             color: white;
             text-decoration: none;
             border-radius: 4px;
         }
         .back-link:hover {
-            background-color: #0056b3;
+            background-color:rgb(91, 55, 118);
         }
     </style>
 </head>

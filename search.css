@@ -319,149 +319,122 @@ body {
     margin-left: 10px;
   }
   
-  .cards-container {
-    display: flex;
-    flex-wrap: wrap;       
-    gap: 20px;             
-    justify-content: flex-start; 
-  }
-  
-  .prestataire-card {
-      flex: 0 0 calc(25% - 15px);
-      height: 460.92px;
-      border-radius: 14px;
-      border: 1px solid #E3E3E3;
-      box-sizing: border-box;
-      background-color: white;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      margin-top: 20px;
-    }
+.cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px; /* نقصنا gap */
+  padding: 10px 0;
+}
 
-  .prestataire-card-link {
-    text-decoration: none; /* Remove underline from the link wrapping the card */
-  }
-  
-  .service-image {
-    width: 100%;
-    height: 185px;
-    border-radius: 12px 12px 0 0;
-    object-fit: cover;
-  }
-  
-  .card-content {
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    flex-grow: 1;
-    font-family: 'Open Sans', sans-serif;
-  }
-  
-  
-  .profile-category {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  
-  .profile-photo {
-    width: 26px;
-    height: 26px;
-    border-radius: 100%;
-    object-fit: cover;
-  }
-  
-  .name-category {
-    display: flex;
-    justify-content: space-between;
-    flex-grow: 1;
-    align-items: center;
-  }
-  
-  .prestataire-name {
-    font-weight: 700; 
-    font-size: 15px;
-    letter-spacing: -1px;
-    color: #3E185B;
-  }
-  
-  .prestataire-category {
-    font-family: 'Open Sans', sans-serif;
-    font-weight: 600; 
-    font-size: 16px;
-    letter-spacing: -1px;
-    color: #3E185B;
-  }
-  
-  .service-description {
-    font-weight: 400; 
-    font-size: 17px;
-    line-height: 129.8%;
-    color: #623882;
-    margin: 0;
-  }
-  
-  .reviews-section {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .review-icon {
-    width: 15px;
-    height: 15px;
-  }
-  
-  .review-score {
-    font-weight: 700;
-    font-size: 18px;
-    letter-spacing: -1px;
-    color: #3E185B;
-  }
-  
-  .total-reviews {
-    font-weight: 600; 
-    font-size: 18px;
-    letter-spacing: -1px;
-    color: #84659C;
-  }
-  
-  .price-section {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 600; 
-    font-size: 17px;
-    letter-spacing: -1px;
-    color: #3E185B;
-    margin-top: 10px;
-  }
-  
-  .location-availability {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-    margin-bottom: 10px;
-  }
-  
-  .location {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .location-icon {
-    width: 18px;
-    height: 18px;
-    object-fit: contain;
-  }
-  
-  .location-text {
-    font-weight: 600; 
-    font-size: 14px;
-    color: #3E185B;
-  }
+.prestataire-card {
+  flex: 0 0 calc(23% - 10px);
+  box-sizing: border-box;
+  background-color: white;
+  border: 1px solid #E3E3E3;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 400px;
+}
+
+
+
+.prestataire-card a {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  height: 100%;
+}
+
+.service-image {
+  width: 100%;
+  height: 185px;
+  object-fit: cover;
+}
+
+.card-content {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.profile-category {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.profile-photo {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.name-category {
+  display: flex;
+  justify-content: space-between;
+  flex-grow: 1;
+  align-items: center;
+}
+
+.prestataire-name {
+  font-weight: 700;
+  font-size: 15px;
+  color: #3E185B;
+}
+
+.prestataire-category {
+  font-weight: 600;
+  font-size: 14px;
+  color: #3E185B;
+}
+
+.service-description {
+  font-size: 15px;
+  color: #623882;
+}
+
+.reviews-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.review-score,
+.total-reviews {
+  font-weight: 600;
+  font-size: 14px;
+  color: #3E185B;
+}
+
+.price-section {
+  font-weight: 600;
+  font-size: 15px;
+  color: #3E185B;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.location-icon {
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.location-text {
+  font-size: 13px;
+  color: #3E185B;
+}
+
   
   .availability {
     display: flex;
@@ -735,9 +708,8 @@ body {
         justify-content: center;
     }
     .prestataire-card {
-        flex: 0 0 calc(33.33% - 10px);
+        flex: 0 0 calc(25% - 15px); /* Ensure 4 cards per line */
         height: auto;
-        max-width: 300px;
         margin-top: 15px;
     }
     .service-image {
@@ -984,8 +956,7 @@ body {
         justify-content: center;
     }
     .prestataire-card {
-        flex: 0 0 calc(50% - 8px);
-        max-width: 350px;
+        flex: 0 0 calc(50% - 8px); /* Reverted to original for smaller screens */
         margin-top: 15px;
     }
     .service-image {
@@ -1233,8 +1204,7 @@ body {
         justify-content: center;
     }
     .prestataire-card {
-        flex: 0 0 calc(50% - 5px);
-        max-width: 280px;
+        flex: 0 0 calc(50% - 5px); /* Reverted to original for smaller screens */
         margin-top: 10px;
     }
     .service-image {
@@ -1485,9 +1455,8 @@ body {
         align-items: center;
     }
     .prestataire-card {
-        flex: 0 0 auto;
+        flex: 0 0 auto; /* Reverted to original for smallest screens */
         width: 100%;
-        max-width: 300px;
         margin-top: 0;
     }
     .service-image {

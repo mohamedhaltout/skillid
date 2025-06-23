@@ -2,8 +2,8 @@
 session_start();
 require 'config.php';
 
-// Check if the user is logged in and is a client
 
+// Get the profil image is Artisan and get his Profil Image of not get a default image
 $artisan_profile_photo = get_image_path('', 'prestataire'); // Default profile photo
 if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] === 'prestataire') {
     $id_utilisateur = $_SESSION['id_utilisateur'];
@@ -15,17 +15,22 @@ if (isset($_SESSION['id_utilisateur']) && $_SESSION['role'] === 'prestataire') {
     }
 }
 
+
+// Fetch Categories
 $categories = $pdo->query("SELECT id_categorie, nom FROM Categories WHERE type = 'standard'")->fetchAll(PDO::FETCH_ASSOC);
 
-
+// Filters
 $search_query = trim($_GET['search'] ?? '');
 $category_filter = $_GET['category'] ?? '';
 $country_filter = $_GET['country'] ?? '';
 $city_filter = $_GET['city'] ?? '';
 $price_min = $_GET['price_min'] ?? '';
 $price_max = $_GET['price_max'] ?? '';
-$availability_filter = $_GET['availability'] ?? '';
+$rating_filter = $_GET['rating'] ?? '';
 
+
+
+// List Des Prestataire
 $sql = "SELECT p.id_prestataire, p.photo, p.tarif_journalier, p.ville, p.pays,
                u.nom AS user_nom, u.prenom AS user_prenom, c.nom AS categorie_nom,
                (SELECT AVG(note) FROM Evaluation e WHERE e.id_prestataire = p.id_prestataire) AS avg_rating,
@@ -43,6 +48,9 @@ $sql = "SELECT p.id_prestataire, p.photo, p.tarif_journalier, p.ville, p.pays,
        WHERE 1=1";
 
 $params = [];
+
+
+// Filter and search
 
 if ($search_query) {
     $sql .= " AND (c.nom LIKE ? OR p.ville LIKE ? OR EXISTS (SELECT 1 FROM Experience_prestataire ep WHERE ep.id_prestataire = p.id_prestataire AND ep.description LIKE ?))";
@@ -75,19 +83,6 @@ if ($rating_filter && in_array($rating_filter, ['3', '4', '5'])) {
     $sql .= " AND (SELECT AVG(note) FROM Evaluation e WHERE e.id_prestataire = p.id_prestataire) >= ?";
     $params[] = $rating_filter;
 }
-if ($availability_filter) {
-    $days = match ($availability_filter) {
-        '2' => 2,
-        '7' => 7,
-        '15' => 15,
-        default => null
-    };
-    if ($days) {
-        $date_limit = date('Y-m-d', strtotime("+$days days"));
-        $sql .= " AND NOT EXISTS (SELECT 1 FROM Devis d WHERE d.id_prestataire = p.id_prestataire AND d.date_debut_travaux <= ?)";
-        $params[] = $date_limit;
-    }
-}
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
@@ -95,6 +90,8 @@ $prestataires = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Kingdom'];
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -107,7 +104,7 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
   <header class="prestataires-header">
 <style>
     .login-button, .signup-button {
-      background-color: #007bff;
+      background-color: #3E185B;
       color: white;
       padding: 8px 15px;
       border-radius: 5px;
@@ -120,16 +117,30 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
   </style>
     <div class="header-top">
       <div class="logo">
+        <a href="home.php">
         <img src="img/skilled_logo.svg" alt="Skilled Logo" class="logo-img" />
+        </a>
         <span class="logo-text">Skilled<span class="dot">.</span></span>
       </div>
+
+
+      <!-- Right Header -->
       <div class="header-right">
         <?php if (isset($_SESSION['id_utilisateur'])): ?>
-            <img src="img/Notification.svg" class="icon" alt="Notifications" />
-            <img src="img/message.svg" class="icon" alt="Messages" />
-            <img src="img/favorite.svg" class="icon" alt="Favorites" />
-            <span class="orders">Orders</span>
-            <span class="switch">Switch to Artisans</span>
+
+            <!-- Show the Order Button Based On the Role -->
+            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'client'): ?>
+                <a href="client_dashboard.php" class="orders">Orders</a>
+            <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'prestataire'): ?>
+                <a href="artisan_dashboard.php" class="orders">Orders</a>
+            <?php else: ?>
+                <span class="orders">Orders</span>
+            <?php endif; ?>
+
+            <!-- Switch To Artisan -->
+            <a href="sign_up_artisan.php" class="switch">Switch to Artisans</a>
+
+            <!-- Profil -->
             <div class="profile-dropdown">
                 <img src="<?= htmlspecialchars($artisan_profile_photo) ?>" class="profile-pic" alt="Profile" onclick="toggleProfileDropdown(this, event)" />
                 <div class="dropdown-content">
@@ -141,13 +152,18 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
                   <a href="logout.php">Logout</a>
                 </div>
             </div>
+
+            <!-- If The User Not Log In -->
         <?php else: ?>
             <a href="login.php" class="login-button">Login</a>
             <a href="sign_up_client.php" class="signup-button">Sign Up</a>
         <?php endif; ?>
       </div>
     </div>
+    
     <div class="line"></div>
+
+    <!-- Categories Slider -->
     <div class="categories-bar">
       <div class="categories-slider">
         <?php foreach ($categories as $cat): ?>
@@ -158,6 +174,8 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
     </div>
   </header>
 
+
+  <!-- Search Bar -->
   <section class="search-section">
     <div class="search-texts">
       <h1 class="search-title">Find Your Artisan</h1>
@@ -178,6 +196,9 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
         </div>
     </div>
 
+
+
+    <!-- Filters -->
     <section class="cards-filters-section">
         <h2 class="section-title">Artisans</h2>
         <p class="section-description">
@@ -237,17 +258,6 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
                     <?php endif; ?>
                 </select>
             </div>
-<div class="filter-card">
-                <img src="img/calendar.svg" alt="Availability Icon" class="filter-icon" />
-                <span class="filter-title">Availability</span>
-                <img src="img/down_arrow.svg" alt="Dropdown Arrow" class="filter-arrow" />
-                <select name="availability" class="filter-select" onchange="this.form.submit()" form="filterForm">
-                    <option value="">Any Time</option>
-                    <option value="2" <?= $availability_filter == '2' ? 'selected' : '' ?>>Within 2 Days</option>
-                    <option value="7" <?= $availability_filter == '7' ? 'selected' : '' ?>>Within 7 Days</option>
-                    <option value="15" <?= $availability_filter == '15' ? 'selected' : '' ?>>Within 15 Days</option>
-                </select>
-            </div>
 
             <div class="filter-card">
                 <img src="img/price.svg" alt="Price Icon" class="filter-icon" />
@@ -261,48 +271,72 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
                 </div>
             </div>
 
+            <div class="filter-card">
+                <img src="img/rating.svg" alt="Rating Icon" class="filter-icon" />
+                <span class="filter-title">Rating</span>
+                <img src="img/down_arrow.svg" alt="Dropdown Arrow" class="filter-arrow" />
+                <select name="rating" class="filter-select" onchange="this.form.submit()" form="filterForm">
+                    <option value="">All Ratings</option>
+                    <option value="5" <?= $rating_filter == '5' ? 'selected' : '' ?>>5 Stars & Up</option>
+                    <option value="4" <?= $rating_filter == '4' ? 'selected' : '' ?>>4 Stars & Up</option>
+                    <option value="3" <?= $rating_filter == '3' ? 'selected' : '' ?>>3 Stars & Up</option>
+                </select>
+            </div>
+
         </div>
 
         <form id="filterForm" method="GET" style="display: none;">
             <input type="hidden" name="search" value="<?= htmlspecialchars($search_query) ?>">
         </form>
 
+
+        <!-- Artisan Card -->
         <div class="cards-container">
-            <?php if (empty($prestataires)): ?>
-                <p>No artisans found matching your criteria.</p>
-            <?php else: ?>
-                <?php foreach ($prestataires as $prestataire): ?>
-                    <a href="artisan.php?id=<?= $prestataire['id_prestataire'] ?>" class="prestataire-card-link">
-                        <div class="prestataire-card">
-                            <img src="<?= htmlspecialchars(get_image_path($prestataire['cover_image'] ?? $prestataire['photo'], $prestataire['cover_image'] ? 'media' : 'prestataire')) ?>" alt="Service" class="service-image" />
-                            <div class="card-content">
-                                <div class="profile-category">
-                                    <img src="<?= htmlspecialchars(get_image_path($prestataire['photo'], 'prestataire')) ?>" alt="Profile" class="profile-photo" />
-                                    <div class="name-category">
-                                        <span class="prestataire-name"><?= htmlspecialchars($prestataire['user_prenom'] . ' ' . $prestataire['user_nom']) ?></span>
-                                        <span class="prestataire-category"><?= htmlspecialchars($prestataire['categorie_nom']) ?></span>
-                                    </div>
-                                </div>
-                                <p class="service-description">
-                                    <?= htmlspecialchars($prestataire['latest_experience'] ?? 'No experience description available.') ?>
-                                </p>
-                                <div class="reviews-section">
-                                    <img src="img/review_group.svg" alt="Reviews" class="review-icon" />
-                                    <span class="review-score"><?= number_format($prestataire['avg_rating'] ?? 0, 1) ?></span>
-                                    <span class="total-reviews">(<?= $prestataire['review_count'] ?? 0 ?>)</span>
-                                </div>
-                                <div class="price-section"><?= htmlspecialchars($prestataire['tarif_journalier']) ?> DH/day</div>
-                                <div class="location">
-                                        <img src="img/location_icon.svg" alt="Location" class="location-icon" />
-                                        <span class="location-text"><?= htmlspecialchars($prestataire['ville'] . ', ' . $prestataire['pays']) ?></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </div>
+  <?php if (empty($prestataires)): ?>
+    <p>No artisans found matching your criteria.</p>
+  <?php else: ?>
+    <?php foreach ($prestataires as $prestataire): ?>
+      <div class="prestataire-card">
+        <a href="artisan.php?id=<?= $prestataire['id_prestataire'] ?>">
+          <img src="<?= htmlspecialchars(get_image_path($prestataire['cover_image'] ?? $prestataire['photo'], $prestataire['cover_image'] ? 'media' : 'prestataire')) ?>" alt="Service Image" class="service-image" />
+          <div class="card-content">
+            <div class="profile-category">
+              <div class="profile-dropdown">
+                <img src="<?= htmlspecialchars(get_image_path($prestataire['photo'], 'prestataire')) ?>" alt="Profile" class="profile-photo" />
+                <div class="dropdown-content">
+                  <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'client'): ?>
+                    <a href="client_profile.php">My Profile</a>
+                  <?php elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'prestataire'): ?>
+                    <a href="artisan_profile.php">My Artisan Profile</a>
+                  <?php endif; ?>
+                  <a href="logout.php">Logout</a>
+                </div>
+              </div>
+              <div class="name-category">
+                <span class="prestataire-name"><?= htmlspecialchars($prestataire['user_prenom'] . ' ' . $prestataire['user_nom']) ?></span>
+                <span class="prestataire-category"><?= htmlspecialchars($prestataire['categorie_nom']) ?></span>
+              </div>
+            </div>
+            <p class="service-description">
+              <?= htmlspecialchars(truncate_description($prestataire['latest_experience'] ?? 'No experience description available.', 5)) ?>
+            </p>
+            <div class="reviews-section">
+              <img src="img/review_group.svg" alt="Reviews" class="review-icon" />
+              <span class="review-score"><?= number_format($prestataire['avg_rating'] ?? 0, 1) ?></span>
+              <span class="total-reviews">(<?= $prestataire['review_count'] ?? 0 ?>)</span>
+            </div>
+            <div class="price-section"><?= htmlspecialchars($prestataire['tarif_journalier']) ?> DH/day</div>
+            <div class="location">
+              <img src="img/location_icon.svg" alt="Location" class="location-icon" />
+              <span class="location-text"><?= htmlspecialchars($prestataire['ville'] . ', ' . $prestataire['pays']) ?></span>
+            </div>
+          </div>
+        </a>
+      </div>
+    <?php endforeach; ?>
+  <?php endif; ?>
+</div>
+
     </section>
 
     <footer class="footer">
@@ -380,12 +414,15 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
     </footer>
 
     <script>
-        const scrollRightBtn = document.getElementById('scrollRight');
-        const slider = document.querySelector('.categories-slider');
+
+        // Categories Scrool
+        let scrollRightBtn = document.getElementById('scrollRight');
+        let slider = document.querySelector('.categories-slider');
         scrollRightBtn.addEventListener('click', () => {
             slider.scrollBy({ left: 200, behavior: 'smooth' });
         });
 
+        // Citys Filter Select
         let citiesByCountry = {
             "Morocco": ["Tanger", "Casablanca", "Rabat", "Marrakech", "Fes"],
             "Spain": ["Madrid", "Barcelona", "Seville"],
@@ -395,6 +432,8 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
             "United Kingdom": ["London", "Manchester", "Birmingham"]
         };
 
+
+        // Show and Update Citys Based On the Country Selected
         function updateCities() {
             let country = document.getElementById("country-select").value;
             let citySelect = document.getElementById("city-select");
@@ -410,12 +449,17 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
             }
         }
 
+
+
+        // Save the selected City Value if I Change the Page
         <?php if ($country_filter): ?>
             updateCities();
             document.getElementById("city-select").value = "<?= htmlspecialchars($city_filter) ?>";
         <?php endif; ?>
 
 
+
+        // Change the filter-card to be active and show the Dropdown
         document.querySelectorAll('.filter-card').forEach(card => {
             card.addEventListener('click', (e) => {
                 if (!e.target.closest('select') && !e.target.closest('input')) {
@@ -425,6 +469,7 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
         });
 
 
+        // Submit the Price Range Without Click on submit Button
         document.querySelectorAll('.price-range input').forEach(input => {
             input.addEventListener('change', () => {
                 document.getElementById('filterForm').submit();
@@ -476,7 +521,7 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
         }
     </style>
 
-    <script>
+    <!-- <script>
         function toggleProfileDropdown(clickedElement, event) {
             event.stopPropagation(); // Prevent click from immediately closing the dropdown
             let dropdown = clickedElement.closest('.profile-dropdown');
@@ -500,6 +545,7 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
                 });
             }
         }
-    </script>
+    </script> -->
+    
 </body>
 </html>

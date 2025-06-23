@@ -2,6 +2,8 @@
 require 'config.php';
 session_start();
 
+
+// Affichage Des Categories 
 $categories = $pdo->query("SELECT id_categorie, nom FROM Categories WHERE type = 'standard'")->fetchAll(PDO::FETCH_ASSOC);
 
 $popularCategories = $pdo->query("SELECT id_categorie, nom FROM Categories ORDER BY RAND() LIMIT 5")->fetchAll(PDO::FETCH_ASSOC);
@@ -10,6 +12,8 @@ $standardCategories = $pdo->query("SELECT id_categorie, nom, icone FROM Categori
 
 $urgentCategories = $pdo->query("SELECT id_categorie, nom, icone FROM Categories WHERE type = 'emergency'")->fetchAll(PDO::FETCH_ASSOC);
 
+
+// Filters
 $search_query = trim($_GET['search'] ?? '');
 $category_filter = $_GET['category'] ?? '';
 $country_filter = $_GET['country'] ?? '';
@@ -19,6 +23,8 @@ $price_max = $_GET['price_max'] ?? '';
 $availability_filter = $_GET['availability'] ?? '';
 $rating_filter = $_GET['rating'] ?? '';
 
+
+// List Des Prestataire
 $sql = "SELECT p.id_prestataire, p.photo, p.tarif_journalier, p.ville, p.pays,
                u.nom AS user_nom, u.prenom AS user_prenom, c.nom AS categorie_nom,
                (SELECT AVG(note) FROM Evaluation e WHERE e.id_prestataire = p.id_prestataire) AS avg_rating,
@@ -36,6 +42,8 @@ $sql = "SELECT p.id_prestataire, p.photo, p.tarif_journalier, p.ville, p.pays,
        WHERE 1=1";
 
 $params = [];
+
+// Search and filters
 
 if ($search_query) {
     $sql .= " AND (c.nom LIKE ? OR p.ville LIKE ? OR EXISTS (SELECT 1 FROM Experience_prestataire ep WHERE ep.id_prestataire = p.id_prestataire AND ep.description LIKE ?))";
@@ -63,39 +71,13 @@ if ($price_min !== '' && is_numeric($price_min)) {
 if ($price_max !== '' && is_numeric($price_max)) {
     $sql .= " AND p.tarif_journalier <= ?";
     $params[] = $price_max;
-if ($availability_filter) {
-    $days = match ($availability_filter) {
-        '2' => 2,
-        '7' => 7,
-        '15' => 15,
-        default => null
-    };
-    if ($days) {
-        $date_limit = date('Y-m-d', strtotime("+$days days"));
-        $sql .= " AND NOT EXISTS (SELECT 1 FROM Devis d WHERE d.id_prestataire = p.id_prestataire AND d.date_debut_travaux <= ?)";
-        $params[] = $date_limit;
-    }
-}
-}
-if ($availability_filter) {
-    $days = match ($availability_filter) {
-        '2' => 2,
-        '7' => 7,
-        '15' => 15,
-        default => null
-    };
-    if ($days) {
-        $date_limit = date('Y-m-d', strtotime("+$days days"));
-        $sql .= " AND NOT EXISTS (SELECT 1 FROM Devis d WHERE d.id_prestataire = p.id_prestataire AND d.date_debut_travaux <= ?)";
-        $params[] = $date_limit;
-    }
 }
 if ($rating_filter && in_array($rating_filter, ['3', '4', '5'])) {
     $sql .= " AND (SELECT AVG(note) FROM Evaluation e WHERE e.id_prestataire = p.id_prestataire) >= ?";
     $params[] = $rating_filter;
 }
 
-$sql .= " ORDER BY RAND() LIMIT 6"; // Keep the limit for home page
+$sql .= " ORDER BY RAND() LIMIT 4"; // Keep the limit for home page
 
 $stmt = $pdo->prepare($sql);
 $stmt->execute($params);
@@ -187,6 +169,8 @@ hero Title Exemple</h1>
   </main>
 
 
+
+  <!-- Standard Categories -->
   <section class="categories-section">
     <?php foreach ($standardCategories as $cat): ?>
       <a href="search.php?category=<?= htmlspecialchars($cat['id_categorie']) ?>" class="category-card-link">
@@ -201,6 +185,9 @@ hero Title Exemple</h1>
   <hr class="section-divider" />
 
 
+
+
+  <!-- Urgent Categories -->
   <section class="urgent-services">
     <h2 class="urgent-title">Urgent Services</h2>
     <div class="urgent-cards">
@@ -222,6 +209,8 @@ hero Title Exemple</h1>
     Lorem ipsum is a dummy or placeholder text commonly used in graphic design, publishing, and web development.
   </p>
 
+
+  <!-- Category Filter -->
   <div class="filters-container">
     <div class="filter-card">
       <img src="img/categoryes.svg" alt="Category Icon" class="filter-icon" />
@@ -237,6 +226,9 @@ hero Title Exemple</h1>
       </select>
     </div>
 
+
+
+<!-- Country Filter -->
     <div class="filter-card">
       <img src="img/country.svg" alt="Country Icon" class="filter-icon" />
       <span class="filter-title">Country</span>
@@ -251,6 +243,9 @@ hero Title Exemple</h1>
       </select>
     </div>
 
+
+
+    <!-- City Filter -->
     <div class="filter-card">
       <img src="img/City.svg" alt="City Icon" class="filter-icon" />
       <span class="filter-title">City</span>
@@ -275,18 +270,9 @@ hero Title Exemple</h1>
         <?php endif; ?>
       </select>
     </div>
-<div class="filter-card">
-      <img src="img/calendar.svg" alt="Availability Icon" class="filter-icon" />
-      <span class="filter-title">Availability</span>
-      <img src="img/down_arrow.svg" alt="Dropdown Arrow" class="filter-arrow" />
-      <select name="availability" class="filter-select" onchange="this.form.submit()" form="filterForm">
-        <option value="">Any Time</option>
-        <option value="2" <?= $availability_filter == '2' ? 'selected' : '' ?>>Within 2 Days</option>
-        <option value="7" <?= $availability_filter == '7' ? 'selected' : '' ?>>Within 7 Days</option>
-        <option value="15" <?= $availability_filter == '15' ? 'selected' : '' ?>>Within 15 Days</option>
-      </select>
-    </div>
 
+
+    <!-- Price Filter -->
     <div class="filter-card">
       <img src="img/price.svg" alt="Price Icon" class="filter-icon" />
       <span class="filter-title">Price/day</span>
@@ -300,6 +286,8 @@ hero Title Exemple</h1>
     </div>
 
 
+
+    <!-- Rating Filter -->
     <div class="filter-card">
       <img src="img/rating.svg" alt="Rating Icon" class="filter-icon" />
       <span class="filter-title">Rating</span>
@@ -343,7 +331,7 @@ hero Title Exemple</h1>
         </div>
         
         <p class="service-description">
-  <?= htmlspecialchars($artisan['latest_experience'] ?? 'No experience description available.') ?>
+  <?= htmlspecialchars(truncate_description($artisan['latest_experience'] ?? 'No experience description available.', 5)) ?>
 </p>
 
 
@@ -439,7 +427,7 @@ hero Title Exemple</h1>
       <img src="img/door.svg" alt="Icon 1" class="artisans-icon">
       <p class="artisans-text">
         Access a pool of top talent<br>
-        across 700 categories
+        across 25 categories
       </p>
     </div>
     <div class="artisans-item">
@@ -478,11 +466,11 @@ hero Title Exemple</h1>
       <div class="right-side">
         <div class="row">
           <img src="img/img_collage_2.png" class="img img-2" />
-          <img src="img/img_collage_2.png" class="img img-3" />
+          <img src="img/img_collage_2_1.png" class="img img-3" />
         </div>
         <div class="row">
-          <img src="img/img_collage_2.png" class="img img-4" />
-          <img src="img/img_collage_2.png" class="img img-5" />
+          <img src="img/img_collage_2_2.png" class="img img-4" />
+          <img src="img/img_collage_2_3.png" class="img img-5" />
         </div>
       </div>
     </div>
@@ -613,11 +601,16 @@ hero Title Exemple</h1>
 
 
     <script>
+
+      // Menu
         function toggleMenu() {
             let menu = document.querySelector('.header .menu');
             menu.classList.toggle('show');
         }
 
+
+
+        // Citys By Country
         let citiesByCountry = {
             "Morocco": ["Tanger", "Casablanca", "Rabat", "Marrakech", "Fes"],
             "Spain": ["Madrid", "Barcelona", "Seville"],
@@ -627,6 +620,8 @@ hero Title Exemple</h1>
             "United Kingdom": ["London", "Manchester", "Birmingham"]
         };
 
+
+        // Update Citys Based Ob the Countrys
         function updateCities() {
             let country = document.getElementById("country-select").value;
             let citySelect = document.getElementById("city-select");
@@ -642,6 +637,8 @@ hero Title Exemple</h1>
             }
         }
 
+
+        // Save The Citys If Try To Reback on the page
         <?php if ($country_filter): ?>
             updateCities();
             document.getElementById("city-select").value = "<?= htmlspecialchars($city_filter) ?>";
@@ -655,6 +652,8 @@ hero Title Exemple</h1>
             });
         });
 
+
+        // Send The Price From the Filter Without Click On the Submit Button
         document.querySelectorAll('.price-range input').forEach(input => {
             input.addEventListener('change', () => {
                 document.getElementById('filterForm').submit();
@@ -698,12 +697,14 @@ hero Title Exemple</h1>
     </style>
 
     <script>
+
+      
         function toggleProfileDropdown(clickedElement, event) {
-            event.stopPropagation(); // Prevent click from immediately closing the dropdown
+            event.stopPropagation(); 
             let dropdown = clickedElement.closest('.profile-dropdown');
             dropdown.classList.toggle('show');
 
-            // Close other open dropdowns
+
             let allDropdowns = document.querySelectorAll('.profile-dropdown.show');
             allDropdowns.forEach(function(openDropdown) {
                 if (openDropdown !== dropdown) {
@@ -712,7 +713,7 @@ hero Title Exemple</h1>
             });
         }
 
-        // Close the dropdown if the user clicks outside of it
+
         window.onclick = function(event) {
             if (!event.target.closest('.profile-dropdown')) {
                 let dropdowns = document.querySelectorAll(".profile-dropdown.show");
@@ -721,6 +722,7 @@ hero Title Exemple</h1>
                 });
             }
         }
+      
     </script>
 
 </body>
