@@ -2,11 +2,13 @@
 session_start();
 include('config.php');
 
-// Debugging: Log session variables before checking
-error_log("confirm_artisan_meeting.php: SESSION artisan_id = " . (isset($_SESSION['artisan_id']) ? $_SESSION['artisan_id'] : 'NOT SET'));
-error_log("confirm_artisan_meeting.php: SESSION role = " . (isset($_SESSION['role']) ? $_SESSION['role'] : 'NOT SET'));
+// Debugging: Display session variables directly for troubleshooting
+echo "<!-- Debugging Session Variables: -->";
+echo "<!-- artisan_id: " . (isset($_SESSION['artisan_id']) ? $_SESSION['artisan_id'] : 'NOT SET') . " -->";
+echo "<!-- role: " . (isset($_SESSION['role']) ? $_SESSION['role'] : 'NOT SET') . " -->";
+echo "<!-- Full Session: " . htmlspecialchars(print_r($_SESSION, true)) . " -->";
 
-if (!isset($_SESSION['artisan_id']) || $_SESSION['role'] !== 'prestataire') {
+if (!isset($_SESSION['artisan_id']) || (isset($_SESSION['role']) && trim(strtolower($_SESSION['role'])) !== 'prestataire')) {
     error_log("confirm_artisan_meeting.php: Redirecting to login.php due to missing session variables or incorrect role.");
     header("Location: login.php");
     exit();
