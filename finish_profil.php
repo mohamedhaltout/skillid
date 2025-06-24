@@ -195,6 +195,7 @@ if (isset($_POST['specialite'], $_POST['pays'], $_POST['ville'], $_POST['telepho
           </div>
         </div>
 
+
         <!-- Accept Budget -->
         <div class="form-group checkbox-group">
           <div class="form-info">

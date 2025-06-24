@@ -129,7 +129,7 @@ $service_description = htmlspecialchars($reservation_details['description_servic
                         <div class="description">(e.g., $200)</div>
                     </div>
                     <div class="form-input">
-                        <input type="text" id="deposit-amount-input" name="deposit_amount" placeholder="Enter deposit amount" value="<?php echo $is_editing ? htmlspecialchars($devis_data['acompte']) : ''; ?>" required>
+                        <input type="text" id="deposit-amount-input" name="deposit_amount" placeholder="Enter deposit amount" value="<?php echo $is_editing ? htmlspecialchars($devis_data['acompte']) : ''; ?>" required readonly>
                     </div>
                 </div>
 

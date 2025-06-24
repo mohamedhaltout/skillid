@@ -266,7 +266,7 @@ $conn->close();
 <body>
     <header class="main-header">
         <div class="header-left">
-            <img src="img/skilled_logo.svg" alt="Skilled Logo" class="logo-image">
+            <a href="home.php"><img src="img/skilled_logo.svg" alt="Skilled Logo" class="logo-image"></a>
             <div class="logo-text">Skilled<span class="logo-dot">.</span></div>
         </div>
         <div class="header-right">

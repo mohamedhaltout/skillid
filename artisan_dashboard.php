@@ -124,11 +124,25 @@ while ($row = $result->fetch_assoc()) {
 
 // Fetch completed projects (assuming 'completed' status)
 $completed_projects_count = 0;
-$stmt = $conn->prepare("SELECT COUNT(*) AS count FROM Reservation WHERE id_prestataire = ? AND statut = 'completed'");
-$stmt->bind_param("i", $artisan_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$completed_projects_count = $result->fetch_assoc()['count'];
+$current_date = date('Y-m-d'); // Get current date in YYYY-MM-DD format
+$stmt = $conn->prepare("SELECT COUNT(DISTINCT d.id_devis) AS count
+                        FROM Devis d
+                        JOIN Reservation r ON d.id_reservation = r.id_reservation
+                        WHERE r.id_prestataire = ?
+                          AND (d.statut = 'paid' OR d.statut = 'meeting_confirmed')
+                          AND d.date_fin_travaux <= ?");
+if ($stmt === false) {
+    error_log("artisan_dashboard.php: Failed to prepare statement for completed projects: " . $conn->error);
+} else {
+    $stmt->bind_param("is", $artisan_id, $current_date);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    if ($row['count'] !== null) {
+        $completed_projects_count = $row['count'];
+    }
+    $stmt->close();
+}
 
 
 // Fetch received requests count (including 'pending', 'accepted', and 'refused')
@@ -251,7 +265,7 @@ $stmt->close();
 <body>
     <header class="main-header">
         <div class="header-left">
-            <img src="img/skilled_logo.svg" alt="Skilled Logo" class="logo-image">
+            <a href="home.php"><img src="img/skilled_logo.svg" alt="Skilled Logo" class="logo-image"></a>
             <div class="logo-text">Skilled<span class="logo-dot">.</span></div>
         </div>
         <div class="header-right">
@@ -266,6 +280,16 @@ $stmt->close();
 
     <main class="dashboard-content">
         <h1 class="welcome-message">Welcome, <?php echo htmlspecialchars($artisan_name); ?></h1>
+
+        <?php if (isset($_SESSION['message'])): ?>
+            <div class="session-message <?php echo $_SESSION['message_type']; ?>">
+                <?php echo htmlspecialchars($_SESSION['message']); ?>
+            </div>
+            <?php
+            unset($_SESSION['message']);
+            unset($_SESSION['message_type']);
+            ?>
+        <?php endif; ?>
 
         <section class="summary-cards">
             <div class="card received-requests status-pending">

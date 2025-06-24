@@ -302,7 +302,7 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
           <div class="card-content">
             <div class="profile-category">
               <div class="profile-dropdown">
-                <img src="<?= htmlspecialchars(get_image_path($prestataire['photo'], 'prestataire')) ?>" alt="Profile" class="profile-photo" />
+                <img src="<?= htmlspecialchars(get_image_path($prestataire['photo'], 'prestataire')) ?>" alt="Profile" class="profile-photo" onclick="toggleProfileDropdown(this, event)" />
                 <div class="dropdown-content">
                   <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'client'): ?>
                     <a href="client_profile.php">My Profile</a>
@@ -521,7 +521,7 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
         }
     </style>
 
-    <!-- <script>
+    <script>
         function toggleProfileDropdown(clickedElement, event) {
             event.stopPropagation(); // Prevent click from immediately closing the dropdown
             let dropdown = clickedElement.closest('.profile-dropdown');
@@ -545,7 +545,7 @@ $countries = ['Morocco', 'Spain', 'France', 'Belgium', 'Netherlands', 'United Ki
                 });
             }
         }
-    </script> -->
+    </script>
     
 </body>
 </html>

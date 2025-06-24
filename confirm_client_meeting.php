@@ -48,17 +48,6 @@ if (isset($_GET['devis_id'])) {
         $stmt->close();
 
         $date_debut_travaux = new DateTime($devis_data['date_debut_travaux']);
-        $confirmation_deadline = clone $date_debut_travaux;
-        $confirmation_deadline->modify('-72 hours'); // 72 hours before date_debut_travaux
-
-        $current_time = new DateTime();
-
-        if ($current_time < $confirmation_deadline) {
-            $_SESSION['message'] = "Meeting confirmation is not yet open. You can confirm within 72 hours before the work start date.";
-            $_SESSION['message_type'] = "error";
-            header("Location: client_dashboard.php");
-            exit();
-        }
 
         if ($devis_data['client_meeting_confirmed']) {
             $_SESSION['message'] = "You have already confirmed this meeting.";
